@@ -1,63 +1,57 @@
 import "./Hero.css";
 
-//Lista dos pontos fortes da barbearia
-
+// Lista dos pontos fortes da barbearia.
 const heroHighlights = [
-    "Cortes clássicos e modernos",
-    "Barba feita com cuidado",
-    "Ambiente acolhedor e descontraído",
-    "Atendimento com hora marcada",
+  "Cortes clássicos e modernos",
+  "Barba feita com cuidado",
+  "Ambiente acolhedor e descontraído",
+  "Atendimento com hora marcada",
 ];
 
 function Hero({
-    title = "Corte, barba e atendimento no horário.",
-    subtitle = "Uma barbearia prática para quem quer sair alinhado sem perder tempo.",
-
+  title = "Corte, barba e atendimento no horário.",
+  subtitle = "Uma barbearia prática para quem quer sair alinhado sem perder tempo.",
 }) {
-    return (
-        <section className="hero" id="inicio">
-            <div className="hero-container">
-                <div className="hero-content">
-                    <p className="hero-eyebrow">Barbearia masculina</p>
+  return (
+    <section className="hero" id="inicio">
+      <div className="hero-container">
+        <div className="hero-content">
+          <p className="hero-eyebrow">Barbearia masculina</p>
 
-                    {/*Texto principal*/}
-                    <h1 className="hero-title">{title}</h1>
-                    <p className="hero-subtitle">{subtitle}</p>
+          <h1 className="hero-title">{title}</h1>
+          <p className="hero-subtitle">{subtitle}</p>
 
-                    {/*Botoes de ação*/}
-                    <div className="hero-actions">
-                        <a className="hero-primary-link" href="#agendamento">
-                            Agendar Horário
-                        </a>
+          <div className="hero-actions">
+            <a className="hero-primary-link" href="#agendamento">
+              Agendar Horário
+            </a>
 
-                        <a className="hero-secondary-link" href="#servicos">
-                            Ver serviços
-                        </a>
-                    </div>
+            <a className="hero-secondary-link" href="#servicos">
+              Ver serviços
+            </a>
+          </div>
 
-                    {/*Lista de destaques*/}
-                    <ul className="hero-highlights" aria-label="Destaques da barbearia">
-                        {heroHighlights.map((highlight) => (
-                            <li key={highlight}>{highlight}</li>
-                        ))}
-                    </ul>
-                </div>
+          <ul className="hero-highlights" aria-label="Destaques da barbearia">
+            {heroHighlights.map((highlight) => (
+              <li key={highlight}>{highlight}</li>
+            ))}
+          </ul>
+        </div>
 
-                    {/*Parte visual da direita*/}
-                    <div className="hero-card" aria-label="Informações rápidas">
-                        <span className="hero-card-label">Mais pedido</span>
+        <div className="hero-card" aria-label="Informações rápidas">
+          <span className="hero-card-label">Mais pedido</span>
 
-                        <strong className="hero-card-title">Corte + barba</strong>
+          <strong className="hero-card-title">Corte + barba</strong>
 
-                        <p className="hero-card-text">Combo completo para manter o visual em dia</p>
-                        
-                        <div className="hero-card-footer">
-                            <span>A partir de R$ 40,00</span>
-                        </div>
-                    </div>
-                </div>
-        </section>
-    );
+          <p className="hero-card-text">Combo completo para manter o visual em dia</p>
+
+          <div className="hero-card-footer">
+            <span>A partir de R$ 40,00</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 }
 
 export default Hero;

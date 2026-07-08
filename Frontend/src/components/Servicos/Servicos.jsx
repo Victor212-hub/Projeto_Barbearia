@@ -26,16 +26,14 @@ const services = [
     price: "R$ 15,00",
     highlight: false,
   },
-
   {
     name: "Americano",
     description: "Corte rápido e prático, ideal para quem tem pouco tempo.",
-    price: "R$40,00",
+    price: "R$ 40,00",
     highlight: false,
   },
 ];
 
-// Componente menor para cada serviço
 function ServiceCard({ service }) {
   return (
     <article className={`service-card ${service.highlight ? "service-card-featured" : ""}`}>

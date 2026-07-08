@@ -3,7 +3,7 @@ import "./Gallery.css";
 // Galeria de fotos, por enquanto só o modelo.
 const galleryItems = [
   {
-    title: "corte degradê",
+    title: "Corte degradê",
     category: "Corte",
     image: "",
   },
@@ -47,8 +47,8 @@ function GalleryCard({ item }) {
         )}
       </div>
 
-      <div className="galelry-card-content">
-        <span className="galelry-category">{item.category}</span>
+      <div className="gallery-card-content">
+        <span className="gallery-category">{item.category}</span>
         <h3 className="gallery-card-title">{item.title}</h3>
       </div>
     </article>

@@ -3,6 +3,7 @@ import Header from "./components/Header/Header";
 import Hero from "./components/Hero/Hero";
 import Services from "./components/Servicos/Servicos";
 import Gallery from "./components/Gallery/Gallery";
+import BookingForm from "./components/BookingForm/BookingForm";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Hero />
         <Services />
         <Gallery />
+        <BookingForm />
       </main>
     </>
   );

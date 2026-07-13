@@ -5,6 +5,7 @@ import Services from "./components/Servicos/Servicos";
 import Gallery from "./components/Gallery/Gallery";
 import BookingForm from "./components/BookingForm/BookingForm";
 import Location from "./components/Location/Location";
+import Footer from "./components/Footer/Footer";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Gallery />
         <BookingForm />
         <Location />
+        <Footer />
       </main>
 
       

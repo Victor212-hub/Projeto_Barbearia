@@ -2,7 +2,7 @@ import { useState } from "react";
 import "./BookingForm.css";
 
 import BookingFields from "./BookingFields";
-import VerificationStep from "./VerificationStep";
+import VerificationStep from "./Verification";
 import SuccessStep from "./SuccessStep";
 
 import {

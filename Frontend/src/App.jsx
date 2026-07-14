@@ -20,7 +20,7 @@ function App() {
         <Location />
       </main>
 
-      <Footer buninessName="Barbearia " />
+      <Footer businessName="Barbearia" />
     </>
   );
 }

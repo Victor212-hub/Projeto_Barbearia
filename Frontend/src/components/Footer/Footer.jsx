@@ -81,9 +81,19 @@ function Footer({ businessName = "Barbearia" }) {
           <h3 className="footer-title">Contato</h3>
 
           <ul className="footer-list">
+            <li>
+              <a
+                className="footer-link"
+                href="https://www.instagram.com/usuario_da_barbearia"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Instagram
+              </a>
+            </li>
+            <li className="footer-muted">(00) 00000-0000</li>
             <li className="footer-muted">R. Jaqueira do Carneiro, 175 - Bom Juá</li>
             <li className="footer-muted">Salvador, ba</li>
-            <li className="footer-muted">(00) 00000-0000</li>
             <li>
               <a className="footer-link" href="#agendamento">
                 Solicitar agendamento

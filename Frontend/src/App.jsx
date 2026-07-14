@@ -18,10 +18,9 @@ function App() {
         <Gallery />
         <BookingForm />
         <Location />
-        <Footer />
       </main>
 
-      
+      <Footer buninessName="Barbearia " />
     </>
   );
 }

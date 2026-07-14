@@ -1,16 +1,15 @@
 import { useState } from "react";
 import "./BookingForm.css";
 
-const serviceOptions = [
-  "Corte masculino",
-  "Barba",
-  "Corte + barba",
-  "Sobrancelha",
-];
+import BookingFields from "./BookingFields";
+import VerificationStep from "./VerificationStep";
+import SuccessStep from "./SuccessStep";
 
-// Código temporário apenas para simular a verificação no front-end.
-// Depois o backend deve gerar e validar esse código de forma segura.
-const MOCK_VERIFICATION_CODE = "123456";
+import {
+  sendVerificationCode,
+  verifyCode,
+  createBooking,
+} from "./bookingMockApi";
 
 function BookingForm() {
   const savedCustomer = JSON.parse(localStorage.getItem("barbershopCustomer"));
@@ -53,45 +52,33 @@ function BookingForm() {
       return;
     }
 
+    const response = sendVerificationCode(formData.phone);
+
+    if (!response.success) {
+      setMessage(response.message);
+      return;
+    }
+
     setMessage("");
-
-    /*
-      Futuro backend:
-      Aqui o front-end deve chamar uma API para enviar o código.
-
-      Exemplo futuro:
-      await fetch("/api/auth/send-code", {
-        method: "POST",
-        body: JSON.stringify({ phone: formData.phone }),
-      });
-
-      Por enquanto, apenas simulamos indo para a etapa de verificação.
-    */
-
     setStep("verify");
   }
 
   function handleVerifyCode(event) {
     event.preventDefault();
 
-    if (verificationCode !== MOCK_VERIFICATION_CODE) {
-      setMessage("Código inválido. Confira o código enviado pelo WhatsApp.");
+    const verificationResponse = verifyCode(verificationCode);
+
+    if (!verificationResponse.success) {
+      setMessage(verificationResponse.message);
       return;
     }
 
-    /*
-      Futuro backend:
-      Aqui o front-end deve chamar uma API para validar o código.
+    const bookingResponse = createBooking(formData);
 
-      Exemplo futuro:
-      await fetch("/api/auth/verify-code", {
-        method: "POST",
-        body: JSON.stringify({
-          phone: formData.phone,
-          code: verificationCode,
-        }),
-      });
-    */
+    if (!bookingResponse.success) {
+      setMessage(bookingResponse.message);
+      return;
+    }
 
     if (shouldSaveCustomer) {
       localStorage.setItem(
@@ -102,17 +89,6 @@ function BookingForm() {
         })
       );
     }
-
-    /*
-      Futuro backend:
-      Depois de validar o código, o front-end deve enviar o agendamento.
-
-      Exemplo futuro:
-      await fetch("/api/bookings", {
-        method: "POST",
-        body: JSON.stringify(formData),
-      });
-    */
 
     setMessage("");
     setStep("success");
@@ -159,190 +135,34 @@ function BookingForm() {
         </div>
 
         {step === "form" && (
-          <form className="booking-form" onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label htmlFor="name">Nome completo</label>
-              <input
-                id="name"
-                name="name"
-                type="text"
-                placeholder="Seu nome"
-                value={formData.name}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="phone">Telefone</label>
-              <input
-                id="phone"
-                name="phone"
-                type="tel"
-                placeholder="(00) 00000-0000"
-                value={formData.phone}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="service">Serviço</label>
-              <select
-                id="service"
-                name="service"
-                value={formData.service}
-                onChange={handleChange}
-              >
-                <option value="">Selecione um serviço</option>
-
-                {serviceOptions.map((service) => (
-                  <option key={service} value={service}>
-                    {service}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="date">Data</label>
-                <input
-                  id="date"
-                  name="date"
-                  type="date"
-                  value={formData.date}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="time">Horário</label>
-                <input
-                  id="time"
-                  name="time"
-                  type="time"
-                  value={formData.time}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="notes">Observação</label>
-              <textarea
-                id="notes"
-                name="notes"
-                placeholder="Alguma preferência ou observação?"
-                value={formData.notes}
-                onChange={handleChange}
-              />
-            </div>
-
-            <button className="booking-button" type="submit">
-              Continuar para verificação
-            </button>
-
-            {message && <p className="booking-message">{message}</p>}
-          </form>
+          <BookingFields
+            formData={formData}
+            message={message}
+            onChange={handleChange}
+            onSubmit={handleSubmit}
+          />
         )}
 
         {step === "verify" && (
-          <form className="booking-form" onSubmit={handleVerifyCode}>
-            <div className="verification-header">
-              <span className="verification-step">Etapa 2 de 2</span>
-
-              <h3>Verifique seu telefone</h3>
-
-              <p>
-                Enviamos um código para o WhatsApp informado:
-                <br />
-                <strong>{formData.phone}</strong>
-              </p>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="verificationCode">Código de verificação</label>
-              <input
-                id="verificationCode"
-                name="verificationCode"
-                type="text"
-                placeholder="Digite o código"
-                value={verificationCode}
-                onChange={(event) => setVerificationCode(event.target.value)}
-              />
-            </div>
-
-            <label className="save-customer-option">
-              <input
-                type="checkbox"
-                checked={shouldSaveCustomer}
-                onChange={(event) =>
-                  setShouldSaveCustomer(event.target.checked)
-                }
-              />
-
-              <span>
-                Salvar meu nome e telefone neste dispositivo para próximos
-                agendamentos.
-              </span>
-            </label>
-
-            <button className="booking-button" type="submit">
-              Confirmar agendamento
-            </button>
-
-            <button
-              className="booking-secondary-button"
-              type="button"
-              onClick={() => {
-                setMessage("");
-                setStep("form");
-              }}
-            >
-              Voltar e corrigir dados
-            </button>
-
-            {message && <p className="booking-message">{message}</p>}
-          </form>
+          <VerificationStep
+            phone={formData.phone}
+            verificationCode={verificationCode}
+            message={message}
+            shouldSaveCustomer={shouldSaveCustomer}
+            onCodeChange={(event) => setVerificationCode(event.target.value)}
+            onSaveCustomerChange={(event) =>
+              setShouldSaveCustomer(event.target.checked)
+            }
+            onSubmit={handleVerifyCode}
+            onBack={() => {
+              setMessage("");
+              setStep("form");
+            }}
+          />
         )}
 
         {step === "success" && (
-          <div className="booking-form booking-success">
-            <span className="success-label">Agendamento solicitado</span>
-
-            <h3>Recebemos sua solicitação.</h3>
-
-            <p>
-              Seu telefone foi verificado e o pedido de agendamento foi
-              registrado na interface. A confirmação final deve ser feita pela
-              barbearia.
-            </p>
-
-            <div className="booking-summary">
-              <p>
-                <strong>Nome:</strong> {formData.name}
-              </p>
-              <p>
-                <strong>Telefone:</strong> {formData.phone}
-              </p>
-              <p>
-                <strong>Serviço:</strong> {formData.service}
-              </p>
-              <p>
-                <strong>Data:</strong> {formData.date}
-              </p>
-              <p>
-                <strong>Horário:</strong> {formData.time}
-              </p>
-            </div>
-
-            <button
-              className="booking-button"
-              type="button"
-              onClick={handleNewBooking}
-            >
-              Fazer novo agendamento
-            </button>
-          </div>
+          <SuccessStep formData={formData} onNewBooking={handleNewBooking} />
         )}
       </div>
     </section>

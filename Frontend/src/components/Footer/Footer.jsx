@@ -37,7 +37,11 @@ function Footer({ businessName = "Barbearia" }) {
       <div className="footer-container">
         <div className="footer-brand">
           <a className="footer-logo" href="#inicio">
-            <span className="footer-logo-mark">B</span>
+            <img
+              className="brand-logo"
+              src="/images/logo_nem_barber.jpg"
+              alt={`Logo da ${businessName}`}
+            />
             <span>{businessName}</span>
           </a>
 

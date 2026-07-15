@@ -9,7 +9,13 @@ const heroHighlights = [
 ];
 
 function Hero({
-  title = "Corte, barba e atendimento no horário.",
+  title = (
+    <>
+      Nem
+      <br />
+      Barber
+    </>
+  ),
   subtitle = "Uma barbearia prática para quem quer sair alinhado sem perder tempo.",
 }) {
   return (

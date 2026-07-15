@@ -45,7 +45,11 @@ function Header({ businessName = "Barbearia", onOpenBarberArea }) {
           aria-label={`${businessName} - voltar ao início`}
           onClick={closeMenu}
         >
-          <span className="brand-mark">B</span>
+          <img
+            className="brand-logo"
+            src="/images/logo_nem_barber.jpg"
+            alt={`Logo da ${businessName}`}
+          />
           <span className="brand-name">{businessName}</span>
         </a>
 

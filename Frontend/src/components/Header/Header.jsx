@@ -20,7 +20,7 @@ const navLinks = [
   },
 ];
 
-function Header({ businessName = "Barbearia" }) {
+function Header({ businessName = "Barbearia", onOpenBarberArea }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   function toggleMenu() {
@@ -29,6 +29,11 @@ function Header({ businessName = "Barbearia" }) {
 
   function closeMenu() {
     setIsMenuOpen(false);
+  }
+
+  function handleOpenBarberArea() {
+    closeMenu();
+    onOpenBarberArea();
   }
 
   return (
@@ -71,13 +76,13 @@ function Header({ businessName = "Barbearia" }) {
             </a>
           ))}
 
-          <a
-            className="barber-area-link mobile-only"
-            href="#area-barbeiro"
-            onClick={closeMenu}
+          <button
+            className="barber-area-link barber-area-button mobile-only"
+            type="button"
+            onClick={handleOpenBarberArea}
           >
             Área do barbeiro
-          </a>
+          </button>
 
           <a
             className="booking-link mobile-booking-link"
@@ -89,9 +94,13 @@ function Header({ businessName = "Barbearia" }) {
         </nav>
 
         <div className="header-actions">
-          <a className="barber-area-link" href="#area-barbeiro">
+          <button
+            className="barber-area-link barber-area-button"
+            type="button"
+            onClick={handleOpenBarberArea}
+          >
             Área do barbeiro
-          </a>
+          </button>
 
           <a className="booking-link" href="#agendamento">
             Agende já

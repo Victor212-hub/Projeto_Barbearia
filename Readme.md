@@ -29,6 +29,7 @@ Além de atender uma barbearia real, o projeto também tem como objetivo servir 
 - CSS
 - Vite
 - Git e GitHub
+- Java
 
 ---
 

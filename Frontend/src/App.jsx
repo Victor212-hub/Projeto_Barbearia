@@ -8,6 +8,7 @@ import BookingForm from "./components/BookingForm/BookingForm";
 import Location from "./components/Location/Location";
 import Footer from "./components/Footer/Footer";
 import BarberArea from "./components/BarberArea/BarberArea";
+import BarberLogin from "./components/BarberLogin/BarberLogin";
 
 function App() {
   const [currentPage, setCurrentPage] = useState("home");
@@ -16,11 +17,24 @@ function App() {
     setCurrentPage("home");
   }
 
-  function goToBarberArea() {
-    setCurrentPage("barber");
+  function goToBarberLogin() {
+    setCurrentPage("barber-login");
   }
 
-  if (currentPage === "barber") {
+  function goToBarberArea() {
+    setCurrentPage("barber-area");
+  }
+
+  if (currentPage === "barber-login") {
+    return (
+      <BarberLogin
+        onLoginSuccess={goToBarberArea}
+        onBackToSite={goToHome}
+      />
+    );
+  }
+
+  if (currentPage === "barber-area") {
     return <BarberArea onBackToSite={goToHome} />;
   }
 
@@ -28,7 +42,7 @@ function App() {
     <>
       <Header
         businessName="Barbearia"
-        onOpenBarberArea={goToBarberArea}
+        onOpenBarberArea={goToBarberLogin}
       />
 
       <main>

@@ -1,0 +1,240 @@
+.barber-login-page {
+  min-height: 100vh;
+
+  background-color: #151515;
+}
+
+.barber-login {
+  min-height: 100vh;
+
+  background-color: #151515;
+  color: #f2f2f2;
+}
+
+.barber-login-container {
+  max-width: 1120px;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 64px 24px;
+
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 56px;
+  align-items: center;
+}
+
+.barber-login-content {
+  max-width: 520px;
+}
+
+.barber-login-back-button {
+  margin-bottom: 28px;
+  padding: 10px 14px;
+
+  border: 1px solid #333;
+  border-radius: 4px;
+
+  background-color: transparent;
+  color: #f2f2f2;
+
+  font-size: 0.9rem;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.barber-login-back-button:hover {
+  border-color: #777;
+  background-color: #181818;
+}
+
+.barber-login-eyebrow {
+  margin: 0 0 12px;
+
+  color: #b8b8b8;
+
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.barber-login-title {
+  margin: 0;
+
+  color: #ffffff;
+
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+}
+
+.barber-login-subtitle {
+  margin: 18px 0 0;
+
+  color: #c7c7c7;
+
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.barber-login-info {
+  margin-top: 28px;
+  padding: 20px;
+
+  border: 1px solid #333;
+  border-radius: 6px;
+
+  background-color: #111;
+}
+
+.barber-login-info strong {
+  display: block;
+  margin-bottom: 10px;
+
+  color: #ffffff;
+
+  font-size: 0.95rem;
+}
+
+.barber-login-info p {
+  margin: 6px 0;
+
+  color: #b8b8b8;
+
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.barber-login-info span {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.barber-login-form {
+  padding: 28px;
+
+  border: 1px solid #333;
+  border-radius: 6px;
+
+  background-color: #111;
+}
+
+.barber-login-form-header {
+  margin-bottom: 24px;
+}
+
+.barber-login-form-header span {
+  display: block;
+  margin-bottom: 8px;
+
+  color: #9d9d9d;
+
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.barber-login-form-header h2 {
+  margin: 0;
+
+  color: #ffffff;
+
+  font-size: 1.6rem;
+  line-height: 1.2;
+}
+
+.barber-login-form-group {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.barber-login-form-group label {
+  color: #f2f2f2;
+
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.barber-login-form-group input {
+  width: 100%;
+  padding: 13px 14px;
+
+  border: 1px solid #333;
+  border-radius: 4px;
+
+  background-color: #181818;
+  color: #f2f2f2;
+
+  font-size: 0.95rem;
+  outline: none;
+
+  transition: border-color 0.2s ease;
+}
+
+.barber-login-form-group input::placeholder {
+  color: #777;
+}
+
+.barber-login-form-group input:focus {
+  border-color: #777;
+}
+
+.barber-login-button {
+  width: 100%;
+  min-height: 46px;
+
+  border: 0;
+  border-radius: 4px;
+
+  background-color: #f2f2f2;
+  color: #111;
+
+  font-size: 0.95rem;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: background-color 0.2s ease;
+}
+
+.barber-login-button:hover {
+  background-color: #d8d8d8;
+}
+
+.barber-login-message {
+  margin: 16px 0 0;
+
+  color: #d61818;
+
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+  .barber-login-container {
+    grid-template-columns: 1fr;
+    gap: 36px;
+    align-items: start;
+  }
+
+  .barber-login-content {
+    max-width: 650px;
+  }
+}
+
+@media (max-width: 560px) {
+  .barber-login-container {
+    padding: 48px 18px 64px;
+  }
+
+  .barber-login-form {
+    padding: 22px;
+  }
+}

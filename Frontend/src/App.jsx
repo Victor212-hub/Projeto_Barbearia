@@ -1,4 +1,5 @@
-import "./App.css";
+import { useState } from "react";
+
 import Header from "./components/Header/Header";
 import Hero from "./components/Hero/Hero";
 import Services from "./components/Servicos/Servicos";
@@ -6,11 +7,29 @@ import Gallery from "./components/Gallery/Gallery";
 import BookingForm from "./components/BookingForm/BookingForm";
 import Location from "./components/Location/Location";
 import Footer from "./components/Footer/Footer";
+import BarberArea from "./components/BarberArea/BarberArea";
 
 function App() {
+  const [currentPage, setCurrentPage] = useState("home");
+
+  function goToHome() {
+    setCurrentPage("home");
+  }
+
+  function goToBarberArea() {
+    setCurrentPage("barber");
+  }
+
+  if (currentPage === "barber") {
+    return <BarberArea onBackToSite={goToHome} />;
+  }
+
   return (
     <>
-      <Header business="Nem Barber" />
+      <Header
+        businessName="Barbearia"
+        onOpenBarberArea={goToBarberArea}
+      />
 
       <main>
         <Hero />

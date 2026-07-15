@@ -91,6 +91,16 @@
   color: #ffffff;
 }
 
+.barber-area-button {
+  padding: 0;
+
+  border: 0;
+  background: none;
+
+  font-family: inherit;
+  cursor: pointer;
+}
+
 .booking-link {
   padding: 10px 16px;
 
@@ -177,18 +187,16 @@
 
   .nav-link,
   .barber-area-link.mobile-only {
+    width: 100%;
     padding: 13px 12px;
 
     border-bottom: 1px solid #242424;
 
     color: #c7c7c7;
+    text-align: left;
     text-decoration: none;
 
     font-size: 0.95rem;
-  }
-
-  .nav-link:last-of-type {
-    border-bottom: 1px solid #242424;
   }
 
   .mobile-only {

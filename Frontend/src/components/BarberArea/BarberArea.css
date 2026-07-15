@@ -78,6 +78,42 @@
   line-height: 1.7;
 }
 
+.barber-summary-grid {
+  margin-bottom: 24px;
+
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.barber-summary-card {
+  padding: 20px;
+
+  border: 1px solid #333;
+  border-radius: 6px;
+
+  background-color: #111;
+}
+
+.barber-summary-card span {
+  display: block;
+  margin-bottom: 10px;
+
+  color: #9d9d9d;
+
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.barber-summary-card strong {
+  color: #ffffff;
+
+  font-size: 2rem;
+  line-height: 1;
+}
+
 .barber-area-panel {
   padding: 24px;
 
@@ -88,7 +124,7 @@
 }
 
 .barber-area-panel-header {
-  margin-bottom: 24px;
+  margin-bottom: 20px;
   padding-bottom: 20px;
 
   display: flex;
@@ -129,6 +165,53 @@
 
   font-size: 0.86rem;
   white-space: nowrap;
+}
+
+.barber-filters {
+  margin-bottom: 20px;
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.barber-filter-button {
+  min-height: 38px;
+  padding: 0 14px;
+
+  border: 1px solid #333;
+  border-radius: 4px;
+
+  background-color: transparent;
+  color: #c7c7c7;
+
+  font-size: 0.88rem;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.barber-filter-button:hover {
+  border-color: #777;
+  color: #ffffff;
+  background-color: #181818;
+}
+
+.barber-filter-button-active {
+  border-color: #f2f2f2;
+
+  background-color: #f2f2f2;
+  color: #111;
+}
+
+.barber-filter-button-active:hover {
+  color: #111;
+  background-color: #d8d8d8;
 }
 
 .booking-list {
@@ -261,6 +344,45 @@
   background-color: #1f1f1f;
 }
 
+.booking-action-note {
+  color: #9d9d9d;
+
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.empty-bookings {
+  padding: 28px;
+
+  border: 1px solid #333;
+  border-radius: 6px;
+
+  background-color: #151515;
+}
+
+.empty-bookings h3 {
+  margin: 0;
+
+  color: #ffffff;
+
+  font-size: 1.2rem;
+}
+
+.empty-bookings p {
+  margin: 10px 0 0;
+
+  color: #c7c7c7;
+
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+  .barber-summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 700px) {
   .barber-area-container {
     padding: 48px 18px 64px;
@@ -273,6 +395,10 @@
   .barber-area-panel-header {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .barber-summary-grid {
+    grid-template-columns: 1fr;
   }
 
   .barber-booking-main {

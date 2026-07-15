@@ -32,17 +32,57 @@ const mockBookings = [
     notes: "Barba desenhada.",
     status: "PENDING",
   },
+  {
+    id: 4,
+    name: "André Lima",
+    phone: "(21) 96666-5555",
+    service: "Sobrancelha",
+    date: "2026-07-16",
+    time: "11:00",
+    notes: "",
+    status: "FINISHED",
+  },
 ];
 
 const statusLabels = {
+  ALL: "Todos",
+  PENDING: "Pendentes",
+  CONFIRMED: "Confirmados",
+  CANCELED: "Cancelados",
+  FINISHED: "Finalizados",
+};
+
+const statusBadgeLabels = {
   PENDING: "Pendente",
   CONFIRMED: "Confirmado",
   CANCELED: "Cancelado",
   FINISHED: "Finalizado",
 };
 
+const statusFilters = ["ALL", "PENDING", "CONFIRMED", "CANCELED", "FINISHED"];
+
 function BarberArea({ onBackToSite }) {
   const [bookings, setBookings] = useState(mockBookings);
+  const [activeFilter, setActiveFilter] = useState("ALL");
+
+  const filteredBookings =
+    activeFilter === "ALL"
+      ? bookings
+      : bookings.filter((booking) => booking.status === activeFilter);
+
+  const totalBookings = bookings.length;
+
+  const pendingBookings = bookings.filter(
+    (booking) => booking.status === "PENDING"
+  ).length;
+
+  const confirmedBookings = bookings.filter(
+    (booking) => booking.status === "CONFIRMED"
+  ).length;
+
+  const finishedBookings = bookings.filter(
+    (booking) => booking.status === "FINISHED"
+  ).length;
 
   function updateBookingStatus(bookingId, newStatus) {
     setBookings((currentBookings) =>
@@ -84,6 +124,28 @@ function BarberArea({ onBackToSite }) {
             </p>
           </div>
 
+          <div className="barber-summary-grid">
+            <article className="barber-summary-card">
+              <span>Total</span>
+              <strong>{totalBookings}</strong>
+            </article>
+
+            <article className="barber-summary-card">
+              <span>Pendentes</span>
+              <strong>{pendingBookings}</strong>
+            </article>
+
+            <article className="barber-summary-card">
+              <span>Confirmados</span>
+              <strong>{confirmedBookings}</strong>
+            </article>
+
+            <article className="barber-summary-card">
+              <span>Finalizados</span>
+              <strong>{finishedBookings}</strong>
+            </article>
+          </div>
+
           <div className="barber-area-panel">
             <div className="barber-area-panel-header">
               <div>
@@ -92,80 +154,129 @@ function BarberArea({ onBackToSite }) {
               </div>
 
               <span className="panel-count">
-                {bookings.length} agendamentos
+                {filteredBookings.length} exibidos
               </span>
             </div>
 
-            <div className="booking-list">
-              {bookings.map((booking) => (
-                <article className="barber-booking-card" key={booking.id}>
-                  <div className="barber-booking-main">
-                    <div>
-                      <span className="booking-client-name">
-                        {booking.name}
-                      </span>
+            <div className="barber-filters" aria-label="Filtros de status">
+              {statusFilters.map((status) => (
+                <button
+                  key={status}
+                  className={`barber-filter-button ${
+                    activeFilter === status ? "barber-filter-button-active" : ""
+                  }`}
+                  type="button"
+                  onClick={() => setActiveFilter(status)}
+                >
+                  {statusLabels[status]}
+                </button>
+              ))}
+            </div>
 
-                      <span className="booking-client-phone">
-                        {booking.phone}
+            <div className="booking-list">
+              {filteredBookings.length > 0 ? (
+                filteredBookings.map((booking) => (
+                  <article className="barber-booking-card" key={booking.id}>
+                    <div className="barber-booking-main">
+                      <div>
+                        <span className="booking-client-name">
+                          {booking.name}
+                        </span>
+
+                        <span className="booking-client-phone">
+                          {booking.phone}
+                        </span>
+                      </div>
+
+                      <span
+                        className={`booking-status booking-status-${booking.status.toLowerCase()}`}
+                      >
+                        {statusBadgeLabels[booking.status]}
                       </span>
                     </div>
 
-                    <span
-                      className={`booking-status booking-status-${booking.status.toLowerCase()}`}
-                    >
-                      {statusLabels[booking.status]}
-                    </span>
-                  </div>
+                    <div className="barber-booking-details">
+                      <p>
+                        <strong>Serviço:</strong> {booking.service}
+                      </p>
 
-                  <div className="barber-booking-details">
-                    <p>
-                      <strong>Serviço:</strong> {booking.service}
-                    </p>
+                      <p>
+                        <strong>Data:</strong> {booking.date}
+                      </p>
 
-                    <p>
-                      <strong>Data:</strong> {booking.date}
-                    </p>
+                      <p>
+                        <strong>Horário:</strong> {booking.time}
+                      </p>
 
-                    <p>
-                      <strong>Horário:</strong> {booking.time}
-                    </p>
+                      <p>
+                        <strong>Observação:</strong>{" "}
+                        {booking.notes || "Nenhuma observação"}
+                      </p>
+                    </div>
 
-                    <p>
-                      <strong>Observação:</strong>{" "}
-                      {booking.notes || "Nenhuma observação"}
-                    </p>
-                  </div>
+                    <div className="barber-booking-actions">
+                      {booking.status === "PENDING" && (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              updateBookingStatus(booking.id, "CONFIRMED")
+                            }
+                          >
+                            Confirmar
+                          </button>
 
-                  <div className="barber-booking-actions">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        updateBookingStatus(booking.id, "CONFIRMED")
-                      }
-                    >
-                      Confirmar
-                    </button>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              updateBookingStatus(booking.id, "CANCELED")
+                            }
+                          >
+                            Cancelar
+                          </button>
+                        </>
+                      )}
 
-                    <button
-                      type="button"
-                      onClick={() =>
-                        updateBookingStatus(booking.id, "CANCELED")
-                      }
-                    >
-                      Cancelar
-                    </button>
+                      {booking.status === "CONFIRMED" && (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              updateBookingStatus(booking.id, "FINISHED")
+                            }
+                          >
+                            Finalizar
+                          </button>
 
-                    <button
-                      type="button"
-                      onClick={() =>
-                        updateBookingStatus(booking.id, "FINISHED")
-                      }
-                    >
-                      Finalizar
-                    </button>
-                  </div>
-                </article>
-              ))}
+                          <button
+                            type="button"
+                            onClick={() =>
+                              updateBookingStatus(booking.id, "CANCELED")
+                            }
+                          >
+                            Cancelar
+                          </button>
+                        </>
+                      )}
+
+                      {(booking.status === "CANCELED" ||
+                        booking.status === "FINISHED") && (
+                        <span className="booking-action-note">
+                          Nenhuma ação disponível para este status.
+                        </span>
+                      )}
+                    </div>
+                  </article>
+                ))
+              ) : (
+                <div className="empty-bookings">
+                  <h3>Nenhum agendamento encontrado.</h3>
+                  <p>
+                    Não existem agendamentos com o status selecionado no
+                    momento.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>

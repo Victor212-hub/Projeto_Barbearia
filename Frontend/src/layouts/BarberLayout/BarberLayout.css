@@ -1,0 +1,53 @@
+.barber-layout-shell {
+  min-height: 100vh;
+  background: #111;
+  color: #fff;
+}
+
+.barber-layout-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 2rem;
+  background: #000;
+}
+
+.barber-layout-eyebrow {
+  margin: 0 0 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.75rem;
+}
+
+.barber-layout-title {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.barber-layout-nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.barber-layout-link,
+.barber-layout-button {
+  color: #fff;
+  text-decoration: none;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+}
+
+.barber-layout-main {
+  padding: 2rem;
+}
+
+@media (max-width: 768px) {
+  .barber-layout-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+}

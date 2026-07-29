@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 import "./Location.css";
 
 function Location() {
@@ -34,9 +35,9 @@ function Location() {
                     </div>
 
                     <div className="location-actions">
-                        <a className="location-primary-link" href="#agendamento">
+                        <Link className="location-primary-link" to="/agendar">
                             Agendar horário
-                        </a>
+                        </Link>
 
                         <a
                             className="location-secondary-link"

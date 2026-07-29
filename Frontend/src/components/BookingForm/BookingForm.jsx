@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router";
+import { useAuth } from "../../auth/AuthContext";
 import "./BookingForm.css";
 
 import BookingFields from "./BookingFields";
@@ -11,12 +13,17 @@ import {
   createBooking,
 } from "./bookingMockApi";
 
+const DRAFT_STORAGE_KEY = "barbershop-booking-draft";
+
 function BookingForm() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
   const savedCustomer = JSON.parse(localStorage.getItem("barbershopCustomer"));
 
   const [formData, setFormData] = useState({
-    name: savedCustomer?.name || "",
-    phone: savedCustomer?.phone || "",
+    name: savedCustomer?.name || user?.name || "",
+    phone: savedCustomer?.phone || user?.phone || "",
     service: "",
     date: "",
     time: "",
@@ -27,6 +34,38 @@ function BookingForm() {
   const [verificationCode, setVerificationCode] = useState("");
   const [message, setMessage] = useState("");
   const [shouldSaveCustomer, setShouldSaveCustomer] = useState(false);
+
+  useEffect(() => {
+    const storedDraft = window.sessionStorage.getItem(DRAFT_STORAGE_KEY);
+
+    if (!storedDraft) {
+      return;
+    }
+
+    try {
+      const parsedDraft = JSON.parse(storedDraft);
+      setFormData((currentData) => ({
+        ...currentData,
+        service: parsedDraft.service || currentData.service,
+        date: parsedDraft.date || currentData.date,
+        time: parsedDraft.time || currentData.time,
+        notes: parsedDraft.notes || currentData.notes,
+      }));
+    } catch (error) {
+      console.warn("Não foi possível restaurar o rascunho do agendamento.", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    const draftToSave = {
+      service: formData.service,
+      date: formData.date,
+      time: formData.time,
+      notes: formData.notes,
+    };
+
+    window.sessionStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draftToSave));
+  }, [formData.service, formData.date, formData.time, formData.notes]);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -49,6 +88,24 @@ function BookingForm() {
 
     if (requiredFieldsAreEmpty) {
       setMessage("Preencha nome, telefone, serviço, data e horário.");
+      return;
+    }
+
+    if (!user) {
+      window.sessionStorage.setItem(
+        DRAFT_STORAGE_KEY,
+        JSON.stringify({
+          service: formData.service,
+          date: formData.date,
+          time: formData.time,
+          notes: formData.notes,
+        })
+      );
+
+      navigate("/entrar", {
+        state: { from: { pathname: location.pathname } },
+        replace: false,
+      });
       return;
     }
 

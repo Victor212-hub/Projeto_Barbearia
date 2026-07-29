@@ -8,30 +8,7 @@ const serviceOptions = [
 function BookingFields({ formData, message, onChange, onSubmit }) {
     return (
         <form className="booking-form" onSubmit={onSubmit}>
-            <div className="form-group">
-                <label htmlFor="name">Nome completo</label>
-                <input
-                    id="name"
-                    name="name"
-                    type="text"
-                    placeholder="Seu nome"
-                    value={formData.name}
-                    onChange={onChange}
-                />
-            </div>
-
-            <div className="form-group">
-                <label htmlFor="phone">Telefone</label>
-                <input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    placeholder="(00) 00000-0000"
-                    value={formData.phone}
-                    onChange={onChange}
-                />
-            </div>
-
+          
             <div className="form-group">
                 <label htmlFor="service">Serviço</label>
                 <select

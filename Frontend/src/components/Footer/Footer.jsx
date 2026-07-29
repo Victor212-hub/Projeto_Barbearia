@@ -1,25 +1,26 @@
+import { Link, useNavigate } from "react-router";
 import "./Footer.css";
 
 const footerLinks = [
   {
     label: "Início",
-    href: "#inicio",
+    href: "/#inicio",
   },
   {
     label: "Serviços",
-    href: "#servicos",
+    href: "/#servicos",
   },
   {
     label: "Galeria",
-    href: "#galeria",
+    href: "/#galeria",
   },
   {
     label: "Agendamento",
-    href: "#agendamento",
+    href: "/agendar",
   },
   {
     label: "Localização",
-    href: "#localizacao",
+    href: "/#localizacao",
   },
 ];
 
@@ -31,19 +32,36 @@ const openingHours = [
 
 function Footer({ businessName = "Barbearia" }) {
   const currentYear = new Date().getFullYear();
+  const navigate = useNavigate();
+
+  function handleNavigation(targetPath) {
+    if (targetPath.startsWith("/#")) {
+      navigate("/");
+      setTimeout(() => {
+        const sectionId = targetPath.replace("/#", "");
+        const section = document.getElementById(sectionId);
+        if (section) {
+          section.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, 0);
+      return;
+    }
+
+    navigate(targetPath);
+  }
 
   return (
     <footer className="footer">
       <div className="footer-container">
         <div className="footer-brand">
-          <a className="footer-logo" href="#inicio">
+          <Link className="footer-logo" to="/">
             <img
               className="brand-logo"
               src="/images/logo_nem_barber.jpg"
               alt={`Logo da ${businessName}`}
             />
             <span>{businessName}</span>
-          </a>
+          </Link>
 
           <p className="footer-text">
             Corte, barba e atendimento com horário marcado para quem quer sair
@@ -61,9 +79,13 @@ function Footer({ businessName = "Barbearia" }) {
           <ul className="footer-list">
             {footerLinks.map((link) => (
               <li key={link.href}>
-                <a className="footer-link" href={link.href}>
+                <button
+                  className="footer-link"
+                  type="button"
+                  onClick={() => handleNavigation(link.href)}
+                >
                   {link.label}
-                </a>
+                </button>
               </li>
             ))}
           </ul>
@@ -99,9 +121,9 @@ function Footer({ businessName = "Barbearia" }) {
             <li className="footer-muted">R. Jaqueira do Carneiro, 175 - Bom Juá</li>
             <li className="footer-muted">Salvador, ba</li>
             <li>
-              <a className="footer-link" href="#agendamento">
+              <button className="footer-link" type="button" onClick={() => handleNavigation("/agendar")}>
                 Solicitar agendamento
-              </a>
+              </button>
             </li>
           </ul>
         </div>

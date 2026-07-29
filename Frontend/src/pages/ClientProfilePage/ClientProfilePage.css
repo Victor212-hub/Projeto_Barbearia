@@ -1,0 +1,100 @@
+.client-profile-page {
+  padding: 2rem;
+  background: #f5f5f5;
+}
+
+.client-profile-card {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem;
+  border-radius: 1rem;
+  background: #fff;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+}
+
+.client-profile-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.client-profile-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #111;
+  color: #fff;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.client-profile-eyebrow {
+  margin: 0 0 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.75rem;
+  color: #666;
+}
+
+.client-profile-title {
+  margin: 0 0 0.25rem;
+  font-size: 1.5rem;
+  color: #111;
+}
+
+.client-profile-subtitle {
+  margin: 0;
+  color: #555;
+}
+
+.client-profile-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.client-profile-panel {
+  border: 1px solid #e5e5e5;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  background: #fafafa;
+}
+
+.client-profile-panel h2 {
+  margin-top: 0;
+  font-size: 1rem;
+}
+
+.client-profile-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+}
+
+.client-profile-action-button {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.8rem 1rem;
+  background: #111;
+  color: #fff;
+  cursor: pointer;
+}
+
+.client-profile-action-button.secondary {
+  background: #444;
+}
+
+.client-profile-action-button.danger {
+  background: #b3261e;
+}
+
+@media (max-width: 768px) {
+  .client-profile-grid {
+    grid-template-columns: 1fr;
+  }
+}

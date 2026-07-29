@@ -1,27 +1,30 @@
 import { useState } from "react";
+import { Link, NavLink, useLocation, useNavigate } from "react-router";
 import "./Header.css";
 
 const navLinks = [
   {
     label: "Início",
-    href: "#inicio",
+    href: "/#inicio",
   },
   {
     label: "Serviços",
-    href: "#servicos",
+    href: "/#servicos",
   },
   {
     label: "Galeria",
-    href: "#galeria",
+    href: "/#galeria",
   },
   {
     label: "Localização",
-    href: "#localizacao",
+    href: "/#localizacao",
   },
 ];
 
-function Header({ businessName = "Barbearia", onOpenBarberArea }) {
+function Header({ businessName = "Barbearia" }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   function toggleMenu() {
     setIsMenuOpen((currentState) => !currentState);
@@ -31,17 +34,30 @@ function Header({ businessName = "Barbearia", onOpenBarberArea }) {
     setIsMenuOpen(false);
   }
 
-  function handleOpenBarberArea() {
+  function handleNavigate(targetPath) {
     closeMenu();
-    onOpenBarberArea();
+    navigate(targetPath);
+  }
+
+  function handlePublicHashNavigation(targetPath) {
+    closeMenu();
+    if (location.pathname === "/") {
+      const element = document.getElementById(targetPath.replace("/#", ""));
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+      }
+    }
+
+    navigate(targetPath);
   }
 
   return (
     <header className="site-header">
       <div className="header-container">
-        <a
+        <Link
           className="brand"
-          href="#inicio"
+          to="/"
           aria-label={`${businessName} - voltar ao início`}
           onClick={closeMenu}
         >
@@ -51,7 +67,7 @@ function Header({ businessName = "Barbearia", onOpenBarberArea }) {
             alt={`Logo da ${businessName}`}
           />
           <span className="brand-name">{businessName}</span>
-        </a>
+        </Link>
 
         <button
           className="menu-toggle"
@@ -70,45 +86,45 @@ function Header({ businessName = "Barbearia", onOpenBarberArea }) {
           aria-label="Menu principal"
         >
           {navLinks.map((link) => (
-            <a
+            <button
               key={link.href}
               className="nav-link"
-              href={link.href}
-              onClick={closeMenu}
+              type="button"
+              onClick={() => handlePublicHashNavigation(link.href)}
             >
               {link.label}
-            </a>
+            </button>
           ))}
 
           <button
             className="barber-area-link barber-area-button mobile-only"
             type="button"
-            onClick={handleOpenBarberArea}
+            onClick={() => handleNavigate("/barbeiro/login")}
           >
             Área do barbeiro
           </button>
 
-          <a
+          <button
             className="booking-link mobile-booking-link"
-            href="#agendamento"
-            onClick={closeMenu}
+            type="button"
+            onClick={() => handleNavigate("/agendar")}
           >
             Agende já
-          </a>
+          </button>
         </nav>
 
         <div className="header-actions">
           <button
             className="barber-area-link barber-area-button"
             type="button"
-            onClick={handleOpenBarberArea}
+            onClick={() => handleNavigate("/barbeiro/login")}
           >
             Área do barbeiro
           </button>
 
-          <a className="booking-link" href="#agendamento">
+          <button className="booking-link" type="button" onClick={() => handleNavigate("/agendar")}>
             Agende já
-          </a>
+          </button>
         </div>
       </div>
     </header>

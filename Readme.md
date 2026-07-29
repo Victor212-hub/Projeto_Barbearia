@@ -1,6 +1,6 @@
 # Projeto Barbearia
 
-Site institucional desenvolvido em React para uma barbearia, com foco em apresentação profissional, divulgação de serviços, galeria de imagens e futura funcionalidade de agendamento.
+Site institucional desenvolvido em React para uma barbearia, com foco em apresentação profissional, divulgação de serviços, galeria de imagens e funcionalidade de agendamento.
 
 O projeto foi pensado para ser simples, direto e comercial, evitando aparência genérica ou artificial. A proposta é criar uma landing page limpa, responsiva e fácil de adaptar para outras barbearias no futuro.
 

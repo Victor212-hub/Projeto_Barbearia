@@ -1,0 +1,125 @@
+package com.Barbearia.backend.service;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.Barbearia.backend.DTO.AgendamentoRequestDTO;
+import com.Barbearia.backend.DTO.AgendamentoResponseDTO;
+import com.Barbearia.backend.DTO.ServicoDTO;
+import com.Barbearia.backend.repository.*;
+import com.Barbearia.backend.model.*;
+
+@Service
+public class AgendamentoService {
+    
+
+    private final AgendamentoRepository repository;
+    private final ClienteRepository clienteRepository;
+    private final BarbeiroRepository barbeiroRepository;
+    private final UnidadeRepository unidadeRepository;
+    private final ServicoRepository servicoRepository;
+
+    public AgendamentoService(AgendamentoRepository repository, ClienteRepository clienteRepository,
+                              BarbeiroRepository barbeiroRepository, UnidadeRepository unidadeRepository,
+                              ServicoRepository servicoRepository) {
+        this.repository = repository;
+        this.clienteRepository = clienteRepository;
+        this.barbeiroRepository = barbeiroRepository;
+        this.unidadeRepository = unidadeRepository;
+        this.servicoRepository = servicoRepository;
+    }
+    public List<AgendamentoResponseDTO> listarTodos(){
+        return repository.findAll().stream().map(this::toDTO).toList();
+    }
+    public AgendamentoResponseDTO criar(AgendamentoRequestDTO dto) {
+
+        Cliente cliente = clienteRepository.findById(dto.getClienteId())
+                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+        Barbeiro barbeiro = barbeiroRepository.findById(dto.getBarbeiroId())
+                .orElseThrow(() -> new RuntimeException("Barbeiro não encontrado"));
+        Unidade unidade = unidadeRepository.findById(dto.getUnidadeId())
+                .orElseThrow(() -> new RuntimeException("Unidade não encontrada"));
+
+               List<Servico> servicos = dto.getServicosIds().stream()
+                .map(id -> servicoRepository.findById(id)
+                        .orElseThrow(() -> new RuntimeException("Serviço não encontrado: " + id)))
+                .toList();
+
+                int duracaoTotalMin = servicos.stream().mapToInt(Servico::getDuracao).sum();
+
+                LocalDateTime inicio = dto.getDataHora();
+                LocalDateTime fim = inicio.plusMinutes(duracaoTotalMin);
+
+                VerificarConflitoDeHorario(barbeiro.getId(), inicio, fim);
+
+                Agendamento agendamento = new Agendamento();
+                agendamento.setCliente(cliente);
+                agendamento.setBarbeiro(barbeiro);
+                agendamento.setUnidade(unidade);
+                agendamento.setDataHora(inicio);
+                agendamento.setStatus(StatusAgendamento.PENDENTE);
+                agendamento.setObservacoes(dto.getObservacoes());
+                agendamento.setServicos(servicos);
+
+                Agendamento salvo = repository.save(agendamento);
+                return toDTO(salvo);
+    }
+    private void VerificarConflitoDeHorario(Long BarbeiroId, LocalDateTime inicio, LocalDateTime fim) {
+        List<Agendamento> possiveisConflitos = repository.findByBarbeiroIdAndDataHoraBetween(
+        BarbeiroId,inicio.minusHours(4), fim.plusHours(4));
+
+        boolean TemConflito = possiveisConflitos.stream()
+        .filter(a -> a.getStatus() != StatusAgendamento.CANCELADO)
+        .anyMatch(a -> SeSobrepoe(a,inicio,fim));
+
+        if (TemConflito) {
+            throw new RuntimeException("O barbeiro já possui um agendamento nesse horário.");
+        }
+    }
+
+    private boolean SeSobrepoe(Agendamento Existente,LocalDateTime NovoInicio, LocalDateTime novoFim){
+        int duracaoExistente = Existente.getServicos().stream().mapToInt(Servico::getDuracao).sum();
+        LocalDateTime ExistenteInicio = Existente.getDataHora();
+        LocalDateTime ExistenteFim = ExistenteInicio.plusMinutes(duracaoExistente);
+
+        return NovoInicio.isBefore(ExistenteFim) && novoFim.isAfter(ExistenteInicio);
+    }
+
+    public AgendamentoResponseDTO atualizarStatus(Long id, StatusAgendamento novoStatus) {
+        Agendamento agendamento = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Agendamento não encontrado"));
+
+        agendamento.setStatus(novoStatus);
+        Agendamento atualizado = repository.save(agendamento);
+        return toDTO(atualizado);
+    }
+
+
+    private AgendamentoResponseDTO toDTO(Agendamento a) {
+
+        List<ServicoDTO> servicosDTO = a.getServicos().stream()
+                .map(s -> new ServicoDTO(s.getId(), s.getNome(),s.getDescricao(),s.getPreco(), s.getDuracao(), s.isDisponivel()))
+                .toList();
+
+        BigDecimal precoTotal = servicosDTO.stream()
+                .map(ServicoDTO::getPreco)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        AgendamentoResponseDTO response = new AgendamentoResponseDTO();
+        response.setId(a.getId());
+        response.setClienteNome(a.getCliente().getNome());
+        response.setBarbeiroNome(a.getBarbeiro().getNome());
+        response.setUnidadeNome(a.getUnidade().getNome());
+        response.setDataHora(a.getDataHora());
+        response.setObservacoes(a.getObservacoes());
+        response.setStatus(a.getStatus());
+        response.setServicos(servicosDTO);
+        response.setPrecoTotal(precoTotal);
+
+        return response;
+    }
+
+}

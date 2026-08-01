@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 import "./Servicos.css";
 
 // Lista de serviços exibidos.
@@ -46,9 +47,9 @@ function ServiceCard({ service }) {
       <div className="service-footer">
         <span className="service-price">{service.price}</span>
 
-        <a className="service-link" href="#agendamento">
+        <Link className="service-link" to="/agendar">
           Agendar
-        </a>
+        </Link>
       </div>
     </article>
   );

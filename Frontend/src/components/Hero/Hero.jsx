@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 import "./Hero.css";
 
 // Lista dos pontos fortes da barbearia.
@@ -9,7 +10,13 @@ const heroHighlights = [
 ];
 
 function Hero({
-  title = "Corte, barba e atendimento no horário.",
+  title = (
+    <>
+      Nem
+      <br />
+      Barber
+    </>
+  ),
   subtitle = "Uma barbearia prática para quem quer sair alinhado sem perder tempo.",
 }) {
   return (
@@ -22,13 +29,13 @@ function Hero({
           <p className="hero-subtitle">{subtitle}</p>
 
           <div className="hero-actions">
-            <a className="hero-primary-link" href="#agendamento">
+            <Link className="hero-primary-link" to="/agendar">
               Agendar Horário
-            </a>
+            </Link>
 
-            <a className="hero-secondary-link" href="#servicos">
+            <Link className="hero-secondary-link" to="/#servicos">
               Ver serviços
-            </a>
+            </Link>
           </div>
 
           <ul className="hero-highlights" aria-label="Destaques da barbearia">

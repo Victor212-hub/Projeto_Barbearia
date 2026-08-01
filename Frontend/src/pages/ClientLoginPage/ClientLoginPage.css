@@ -1,0 +1,52 @@
+.client-login-page {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: #f5f5f5;
+}
+
+.client-login-card {
+  max-width: 480px;
+  width: 100%;
+  padding: 2rem;
+  border-radius: 1rem;
+  background: #fff;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+}
+
+.client-login-eyebrow {
+  margin: 0 0 0.5rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #666;
+}
+
+.client-login-title {
+  margin: 0 0 0.75rem;
+  font-size: 1.8rem;
+  color: #111;
+}
+
+.client-login-subtitle {
+  margin: 0 0 1.25rem;
+  color: #555;
+}
+
+.client-login-button {
+  width: 100%;
+  border: 0;
+  border-radius: 999px;
+  padding: 0.9rem 1.25rem;
+  background: #111;
+  color: #fff;
+  cursor: pointer;
+}
+
+.client-login-hint {
+  margin-top: 1rem;
+  color: #666;
+  font-size: 0.9rem;
+}

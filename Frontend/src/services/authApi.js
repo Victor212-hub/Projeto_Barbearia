@@ -6,7 +6,7 @@ function toClientUser (data) {
     name: data.nome,
     email: data.email,
     phone: data.telefone || "",
-    role: "CLIENT",
+    role: "CLIENT", 
   };
 }
 

@@ -1,47 +1,52 @@
-import { mockClientUser, mockBarberUser } from "../mocks/authMock";
+import { api, setToken } from "../config/api";
 
-// TODO: substituir por integração real com o backend.
-export function loginWithGoogle() {
-  return Promise.resolve({
-    success: true,
-    user: mockClientUser,
-    message: "Login com Google mockado para desenvolvimento.",
-  });
+function toClientUser (data) {
+  return {
+    id: data.id,
+    name: data.nome,
+    email: data.email,
+    phone: data.telefone || "",
+    role: "CLIENT",
+  };
 }
 
-export function loginBarber() {
-  return Promise.resolve({
-    success: true,
-    user: mockBarberUser,
-    message: "Login de barbeiro mockado para desenvolvimento.",
+export async function registerClient({ name, email, password, phone}) {
+  const cliente = await api.post("/api/clientes", {
+    nome: name,
+    email,
+    senha: password,
+    telefone: phone,
   });
+
+  return {
+    success: true,
+    user: toClientUser(cliente),
+    message: "Cadastro realizado com sucesso.",
+  };
 }
 
-export function getCurrentUser() {
-  return Promise.resolve({
-    success: true,
-    user: mockClientUser,
-    message: "Usuário atual ainda não vindo do backend.",
+export async function loginClient({ email, password}) {
+  const response = await api.post("/api/auth/login/cliente", {
+    email,
+    senha: password,
   });
+
+  setToken(response.token);
+
+  return {
+    success: true,
+    user: {
+      id: response.id,
+      name:response.nome,
+      email: response.email,
+      phone: "",
+      role: "CLIENT",
+    },
+    message: "Login realizado com sucesso",
+  };
 }
 
 export function logoutUser() {
-  return Promise.resolve({
-    success: true,
-    message: "Sessão mockada encerrada.",
-  });
-}
-
-export function sendPhoneVerificationCode() {
-  return Promise.resolve({
-    success: true,
-    message: "Código de verificação mockado enviado.",
-  });
-}
-
-export function verifyPhoneCode() {
-  return Promise.resolve({
-    success: true,
-    message: "Código de verificação mockado validado.",
-  });
+  setToken(null);
+  return Promise.resolve({ success: true, message: "Sessão encerrada."});
 }

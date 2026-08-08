@@ -1,8 +1,10 @@
 package com.Barbearia.backend.security;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -30,8 +32,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 String token = header.substring(7);
                if (jwtUtil.isTokenValido(token)) {
                     String email = jwtUtil.extrairEmail(token);
-                    
-                    var authToken = new UsernamePasswordAuthenticationToken(email,null,null);
+                    String role = jwtUtil.extrairRole(token);
+
+                    var authToken = new UsernamePasswordAuthenticationToken(
+                        email,null,List.of(new SimpleGrantedAuthority("ROLE_"+ role)));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }

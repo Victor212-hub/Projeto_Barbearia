@@ -26,7 +26,7 @@ public class Barbeiro {
     private String email;
 
     @Column(nullable = false)
-    private String Senha;
+    private String senha;
 
     @Column(nullable = false)
     private Boolean disponivel = true;

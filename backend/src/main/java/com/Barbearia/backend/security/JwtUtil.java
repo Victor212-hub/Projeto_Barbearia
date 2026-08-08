@@ -26,18 +26,19 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-    public String generateToken(String email,Long id) {
-        Date agora = new Date();
-        Date expira = new Date(agora.getTime() + expirationMs);
+    public String generateToken(String email, Long id, String role) {
+    Date agora = new Date();
+    Date expira = new Date(agora.getTime() + expirationMs);
 
-         return Jwts.builder()
-                .subject(email)
-                .claim("id", id)
-                .issuedAt(agora)
-                .expiration(expira)
-                .signWith(getKey(), SignatureAlgorithm.HS256)
-                .compact();
-    }
+    return Jwts.builder()
+            .subject(email)
+            .claim("id", id)
+            .claim("role", role)
+            .issuedAt(agora)
+            .expiration(expira)
+            .signWith(getKey(), SignatureAlgorithm.HS256)
+            .compact();
+}
 
     public boolean isTokenValido(String token) {
         try {
@@ -50,6 +51,10 @@ public class JwtUtil {
 
     public String extrairEmail(String token) {
         return extrairClaims(token).getSubject();
+    }
+
+    public String extrairRole(String token) {
+        return extrairClaims(token).get("role", String.class);
     }
 
     private Claims extrairClaims(String token) {

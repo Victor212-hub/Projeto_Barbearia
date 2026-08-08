@@ -1,11 +1,12 @@
-import { createContext, useContext, useMemo, useState } from "react";
-import { loginWithGoogle, loginBarber, logoutUser } from "../services/authApi";
-import { mockClientUser, mockBarberUser } from "../mocks/authMock";
+import { createContext, useContext, useState } from "react";
+import { loginClient, registerClient, logoutUser } from "../services/authApi";
+import { setToken } from "../config/api";
+import { mockBarberUser } from "../mocks/authMock";
 
 const AuthContext = createContext(null);
 const AUTH_STORAGE_KEY = "barbershop-auth-user";
 
-function readStoredUser() {
+function readStoreUser() {
   if (typeof window === "undefined") {
     return null;
   }
@@ -20,18 +21,18 @@ function readStoredUser() {
     const parsedUser = JSON.parse(rawUser);
     return parsedUser && typeof parsedUser === "object" ? parsedUser : null;
   } catch (error) {
-    console.warn("Não foi possível ler usuário mockado do sessionStorage.", error);
+    console.warn("Não foi possível ler o usuário salvo", error);
     return null;
   }
 }
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(readStoredUser);
-
+  const [user, setUser] = useState(readStoreUser);
+  
   const isAuthenticated = Boolean(user);
 
   function persistUser(nextUser) {
-    if (typeof window === "undefined") {
+    if (typeof window === "undefined" ) {
       return;
     }
 
@@ -43,45 +44,45 @@ export function AuthProvider({ children }) {
     window.sessionStorage.removeItem(AUTH_STORAGE_KEY);
   }
 
-  async function loginWithGoogleMock() {
-    const response = await loginWithGoogle();
+  async function login({ email, password}) {
+    const response = await loginClient({ email, password});
 
     if (response.success) {
-      setUser(response.user || mockClientUser);
-      persistUser(response.user || mockClientUser);
+      setUser(response.user);
+      persistUser(response.user);
     }
 
     return response;
   }
 
-  async function loginBarberMock() {
-    const response = await loginBarber();
-
-    if (response.success) {
-      setUser(response.user || mockBarberUser);
-      persistUser(response.user || mockBarberUser);
-    }
-
-    return response;
+  async function register ({ name, email, password, phone }) {
+    return registerClient({ name, email, password, phone});
   }
 
   async function logout() {
     const response = await logoutUser();
+    setToken(null);
     setUser(null);
     persistUser(null);
     return response;
   }
 
-  const value = useMemo(
-    () => ({
-      user,
-      isAuthenticated,
-      loginWithGoogleMock,
-      loginBarberMock,
-      logout,
-    }),
-    [user, isAuthenticated]
-  );
+  //o backend ainda nao tem endpoint de login para barbeiro
+  //so tem /api/auth/login/cliente. Mantido mockado ate existir
+  async function loginBarberMock() {
+    setUser(mockBarberUser);
+    persistUser(mockBarberUser);
+    return { success: true, user: mockBarberUser };
+  }
+
+  const value = {
+    user,
+    isAuthenticated,
+    login,
+    register,
+    logout,
+    loginBarberMock,
+  };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

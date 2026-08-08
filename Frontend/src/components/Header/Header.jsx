@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, NavLink, useLocation, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import "./Header.css";
 
 const navLinks = [

@@ -80,7 +80,7 @@ function Footer({ businessName = "Barbearia" }) {
             {footerLinks.map((link) => (
               <li key={link.href}>
                 <button
-                  className="footer-link"
+                  className="footer-nav-link"
                   type="button"
                   onClick={() => handleNavigation(link.href)}
                 >
@@ -121,7 +121,7 @@ function Footer({ businessName = "Barbearia" }) {
             <li className="footer-muted">R. Jaqueira do Carneiro, 175 - Bom Juá</li>
             <li className="footer-muted">Salvador, ba</li>
             <li>
-              <button className="footer-link" type="button" onClick={() => handleNavigation("/agendar")}>
+              <button className="footer-booking-link" type="button" onClick={() => handleNavigation("/agendar")}>
                 Solicitar agendamento
               </button>
             </li>

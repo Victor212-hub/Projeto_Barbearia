@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.Barbearia.backend.DTO.BarbeiroHorarioDTO;
+import com.Barbearia.backend.exception.ResourceNotFoundException;
 import com.Barbearia.backend.model.Barbeiro;
 import com.Barbearia.backend.model.BarbeiroHorario;
 import com.Barbearia.backend.repository.BarbeiroHorarioRepository;
@@ -25,7 +26,7 @@ public class BarbeiroHorarioService {
     }
     public BarbeiroHorarioDTO criar(BarbeiroHorarioDTO dto){
         Barbeiro barbeiro = barbeiroRepository.findById(dto.getBarbeiroId())
-        .orElseThrow(()-> new RuntimeException("Barbeiro Não Encontrado"));
+        .orElseThrow(()-> new ResourceNotFoundException("Barbeiro Não Encontrado"));
 
         BarbeiroHorario Horario = new BarbeiroHorario();
         Horario.setBarbeiro(barbeiro);

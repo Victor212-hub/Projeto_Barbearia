@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import com.Barbearia.backend.repository.BarbeiroRepository;
 import com.Barbearia.backend.repository.UnidadeRepository;
 import com.Barbearia.backend.DTO.BarbeiroDTO;
+import com.Barbearia.backend.exception.ResourceNotFoundException;
 import com.Barbearia.backend.model.Barbeiro;
 import com.Barbearia.backend.model.Unidade;
 
@@ -31,7 +32,7 @@ public class BarbeiroService {
     }
     public BarbeiroDTO criar(BarbeiroDTO dto) {
         Unidade unidade = UnidadeRepository.findById(dto.getUnidadeId())
-                .orElseThrow(() -> new RuntimeException("Unidade não encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Unidade não encontrada"));
         Barbeiro barbeiro = new Barbeiro();
         barbeiro.setUnidade(unidade);
         barbeiro.setNome(dto.getNome());

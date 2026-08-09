@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import org.springframework.stereotype.Service;
 
 import com.Barbearia.backend.DTO.AvaliacaoDTO;
+import com.Barbearia.backend.exception.BadRequestException;
+import com.Barbearia.backend.exception.ResourceNotFoundException;
 import com.Barbearia.backend.model.Agendamento;
 import com.Barbearia.backend.model.Avaliacao;
 import com.Barbearia.backend.model.StatusAgendamento;
@@ -24,13 +26,13 @@ public class AvaliacaoService {
 
     public AvaliacaoDTO criar(AvaliacaoDTO dto){
         Agendamento agendamento = agendamentoRepository.findById(dto.getAgendamentoId())
-            .orElseThrow(() -> new RuntimeException("Agendamento não encontrado"));
+            .orElseThrow(() -> new ResourceNotFoundException("Agendamento não encontrado"));
     
         if (agendamento.getStatus() != StatusAgendamento.CONCLUIDO) {
-            throw new RuntimeException("A avaliação só pode ser criada para agendamentos concluídos");
+            throw new BadRequestException("A avaliação só pode ser criada para agendamentos concluídos");
     }
         if (repository.findByAgendamentoId(dto.getAgendamentoId()).isPresent()) {
-            throw new RuntimeException("A avaliação para este agendamento já foi criada");
+            throw new BadRequestException("A avaliação para este agendamento já foi criada");
     }
         Avaliacao avaliacao = new Avaliacao();
         avaliacao.setAgendamento(agendamento);
@@ -44,7 +46,7 @@ public class AvaliacaoService {
     public AvaliacaoDTO BuscarPorAgendamentoId(Long agendamentoId){
         return repository.findByAgendamentoId(agendamentoId)
            .map(this::toDTO)
-            .orElseThrow(() -> new RuntimeException("Avaliação não encontrada para o agendamento: " + agendamentoId));
+            .orElseThrow(() -> new ResourceNotFoundException("Avaliação não encontrada para o agendamento: " + agendamentoId));
     }
     private AvaliacaoDTO toDTO(Avaliacao a) {
         AvaliacaoDTO dto = new AvaliacaoDTO();

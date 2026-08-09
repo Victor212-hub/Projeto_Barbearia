@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.Barbearia.backend.DTO.LoginRequestDTO;
 import com.Barbearia.backend.DTO.LoginResponseDTO;
+import com.Barbearia.backend.exception.BadRequestException;
 import com.Barbearia.backend.model.Barbeiro;
 import com.Barbearia.backend.model.Cliente;
 import com.Barbearia.backend.repository.BarbeiroRepository;
@@ -28,10 +29,10 @@ public class AuthService {
 
     public LoginResponseDTO loginCliente(LoginRequestDTO dto) {
         Cliente cliente = clienteRepository.findByEmail(dto.getEmail())
-            .orElseThrow(() -> new RuntimeException("Email ou Senha inválidos"));
+            .orElseThrow(() -> new BadRequestException("Email ou Senha inválidos"));
 
         if (!passwordEncoder.matches(dto.getSenha(), cliente.getSenha())) {
-            throw new RuntimeException("Email ou Senha inválidos");
+            throw new BadRequestException("Email ou Senha inválidos");
         }
         String token = jwtUtil.generateToken(cliente.getEmail(), cliente.getId(), "CLIENTE");
 
@@ -45,10 +46,10 @@ public class AuthService {
 
     public LoginResponseDTO loginBarbeiro(LoginRequestDTO dto) {
         Barbeiro barbeiro = barbeiroRepository.findByEmail(dto.getEmail())
-            .orElseThrow(() -> new RuntimeException("Email ou Senha inválidos"));
+            .orElseThrow(() -> new BadRequestException("Email ou Senha inválidos"));
 
         if (!passwordEncoder.matches(dto.getSenha(), barbeiro.getSenha())) {
-            throw new RuntimeException("Email ou Senha inválidos");
+            throw new BadRequestException("Email ou Senha inválidos");
         }
         String token = jwtUtil.generateToken(barbeiro.getEmail(), barbeiro.getId(), "BARBEIRO");
 

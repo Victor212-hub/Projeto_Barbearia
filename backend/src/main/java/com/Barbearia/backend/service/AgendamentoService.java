@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import com.Barbearia.backend.DTO.AgendamentoRequestDTO;
 import com.Barbearia.backend.DTO.AgendamentoResponseDTO;
 import com.Barbearia.backend.DTO.ServicoDTO;
+import com.Barbearia.backend.exception.BadRequestException;
+import com.Barbearia.backend.exception.ResourceNotFoundException;
 import com.Barbearia.backend.repository.*;
 import com.Barbearia.backend.model.*;
 
@@ -37,15 +39,15 @@ public class AgendamentoService {
     public AgendamentoResponseDTO criar(AgendamentoRequestDTO dto) {
 
         Cliente cliente = clienteRepository.findById(dto.getClienteId())
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
         Barbeiro barbeiro = barbeiroRepository.findById(dto.getBarbeiroId())
-                .orElseThrow(() -> new RuntimeException("Barbeiro não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Barbeiro não encontrado"));
         Unidade unidade = unidadeRepository.findById(dto.getUnidadeId())
-                .orElseThrow(() -> new RuntimeException("Unidade não encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Unidade não encontrada"));
 
                List<Servico> servicos = dto.getServicosIds().stream()
                 .map(id -> servicoRepository.findById(id)
-                        .orElseThrow(() -> new RuntimeException("Serviço não encontrado: " + id)))
+                        .orElseThrow(() -> new ResourceNotFoundException("Serviço não encontrado: " + id)))
                 .toList();
 
                 int duracaoTotalMin = servicos.stream().mapToInt(Servico::getDuracao).sum();
@@ -76,7 +78,7 @@ public class AgendamentoService {
         .anyMatch(a -> SeSobrepoe(a,inicio,fim));
 
         if (TemConflito) {
-            throw new RuntimeException("O barbeiro já possui um agendamento nesse horário.");
+            throw new BadRequestException("O barbeiro já possui um agendamento nesse horário.");
         }
     }
 
@@ -90,7 +92,7 @@ public class AgendamentoService {
 
     public AgendamentoResponseDTO atualizarStatus(Long id, StatusAgendamento novoStatus) {
         Agendamento agendamento = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Agendamento não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException ("Agendamento não encontrado"));
 
         agendamento.setStatus(novoStatus);
         Agendamento atualizado = repository.save(agendamento);

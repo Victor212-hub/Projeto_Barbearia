@@ -1,6 +1,7 @@
 package com.Barbearia.backend.service;
 
 import com.Barbearia.backend.DTO.UnidadeDTO;
+import com.Barbearia.backend.exception.ResourceNotFoundException;
 import com.Barbearia.backend.model.Unidade;
 import com.Barbearia.backend.repository.UnidadeRepository;
 import org.springframework.stereotype.Service;
@@ -12,7 +13,7 @@ public class UnidadeService {
 
     private final UnidadeRepository repository;
 
-    // Spring injeta o repository automaticamente aqui (Injeção de Dependência)
+    
     public UnidadeService(UnidadeRepository repository) {
         this.repository = repository;
     }
@@ -34,6 +35,36 @@ public class UnidadeService {
 
         Unidade salva = repository.save(unidade);
         return toDTO(salva);
+    }
+
+    public UnidadeDTO atualizar(Long id, UnidadeDTO dto) {
+        Unidade unidade = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Unidade não encontrada"));
+        if (dto.getNome() != null) {
+            unidade.setNome(dto.getNome());
+        }
+        if (dto.getEndereco() != null) {
+            unidade.setEndereço(dto.getEndereco());
+        }
+        if (dto.getLatitude() != null) {
+            unidade.setLatitude(dto.getLatitude());
+        }
+        if (dto.getLongitude() != null) {
+            unidade.setLongitude(dto.getLongitude());
+        }
+        if (dto.getDescrição() != null) {
+            unidade.setDescrição(dto.getDescrição());
+        }
+
+        Unidade salva = repository.save(unidade);
+        return toDTO(salva);
+    }
+
+    public UnidadeDTO deletar(Long id) {
+        Unidade unidade = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Unidade não encontrada"));
+        repository.delete(unidade);
+        return toDTO(unidade);
     }
 
     private UnidadeDTO toDTO(Unidade u) {

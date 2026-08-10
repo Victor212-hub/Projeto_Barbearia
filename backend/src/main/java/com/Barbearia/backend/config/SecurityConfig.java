@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -20,6 +21,7 @@ import com.Barbearia.backend.security.JwtAuthFilter;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
@@ -40,7 +42,11 @@ public PasswordEncoder passwordEncoder() {
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/servicos").permitAll()
+                .requestMatchers("/api/admin/**").permitAll()//REMOVER ANTES DE IR PARA A PRODUÇÃO!!!!
+                .requestMatchers(HttpMethod.GET, "/api/servicos/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/unidades/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/barbeiros/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/barbeiro-horarios/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/clientes").permitAll()
                 .anyRequest().authenticated()
             )

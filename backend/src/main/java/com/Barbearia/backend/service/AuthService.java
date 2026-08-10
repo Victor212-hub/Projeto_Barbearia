@@ -6,8 +6,10 @@ import org.springframework.stereotype.Service;
 import com.Barbearia.backend.DTO.LoginRequestDTO;
 import com.Barbearia.backend.DTO.LoginResponseDTO;
 import com.Barbearia.backend.exception.BadRequestException;
+import com.Barbearia.backend.model.Admin;
 import com.Barbearia.backend.model.Barbeiro;
 import com.Barbearia.backend.model.Cliente;
+import com.Barbearia.backend.repository.AdminRepository;
 import com.Barbearia.backend.repository.BarbeiroRepository;
 import com.Barbearia.backend.repository.ClienteRepository;
 import com.Barbearia.backend.security.JwtUtil;
@@ -16,13 +18,15 @@ import com.Barbearia.backend.security.JwtUtil;
 public class AuthService {
     private final ClienteRepository clienteRepository;
     private final BarbeiroRepository barbeiroRepository;
+    private final AdminRepository adminRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
 
-    public AuthService(ClienteRepository clienteRepository,BarbeiroRepository barbeiroRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
+    public AuthService(ClienteRepository clienteRepository,BarbeiroRepository barbeiroRepository,AdminRepository adminRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
         this.clienteRepository = clienteRepository;
         this.barbeiroRepository = barbeiroRepository;
+        this.adminRepository = adminRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
     }
@@ -59,5 +63,22 @@ public class AuthService {
         response.setNome(barbeiro.getNome());
         response.setEmail(barbeiro.getEmail());
         return response;
+    }
+
+    public LoginResponseDTO loginAdmin(LoginRequestDTO dto){
+        Admin admin = adminRepository.findByEmail(dto.getEmail())
+            .orElseThrow(() -> new BadRequestException("Email ou Senha inválidos"));
+        if (!passwordEncoder.matches(dto.getSenha(), admin.getSenha())) {
+            throw new BadRequestException("Email ou Senha inválidos");
+        }
+        String token = jwtUtil.generateToken(admin.getEmail(), admin.getId(), "ADMIN");
+
+        LoginResponseDTO response = new LoginResponseDTO();
+        response.setToken(token);
+        response.setId(admin.getId());
+        response.setNome(admin.getNome());
+        response.setEmail(admin.getEmail());
+        return response;
+
     }
 }

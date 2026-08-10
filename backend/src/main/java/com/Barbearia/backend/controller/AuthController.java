@@ -25,4 +25,9 @@ public class AuthController {
     public LoginResponseDTO loginBarbeiro(@RequestBody LoginRequestDTO dto) {
         return service.loginBarbeiro(dto);
     }
+
+    @PostMapping("/login/admin")
+    public LoginResponseDTO loginAdmin(@RequestBody LoginRequestDTO dto) {
+        return service.loginAdmin(dto);
+    }
 }

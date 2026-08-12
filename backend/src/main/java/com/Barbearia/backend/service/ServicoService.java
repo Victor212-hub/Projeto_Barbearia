@@ -56,11 +56,11 @@ public class ServicoService {
         Servico salvo = repository.save(servico);
         return toDTO(salvo);
     }
-    public ServicoDTO deletar(Long id) {
+    public void deletar(Long id) {
         Servico servico = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Serviço não encontrado"));
         repository.delete(servico);
-        return toDTO(servico);
+      
     }
 
     private ServicoDTO toDTO(Servico s) {

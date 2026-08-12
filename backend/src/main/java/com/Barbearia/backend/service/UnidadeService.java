@@ -60,11 +60,11 @@ public class UnidadeService {
         return toDTO(salva);
     }
 
-    public UnidadeDTO deletar(Long id) {
+    public void deletar(Long id) {
         Unidade unidade = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Unidade não encontrada"));
         repository.delete(unidade);
-        return toDTO(unidade);
+    
     }
 
     private UnidadeDTO toDTO(Unidade u) {

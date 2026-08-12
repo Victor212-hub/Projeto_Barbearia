@@ -68,11 +68,11 @@ public class BarbeiroService {
         Barbeiro atualizado = Repository.save(barbeiro);
         return toDTO(atualizado);
     }  
-    public BarbeiroDTO deletar(Long id){
+    public void deletar(Long id){
         Barbeiro barbeiro = Repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Barbeiro não encontrado"));
         Repository.delete(barbeiro);
-        return toDTO(barbeiro);
+        
     }
 
     private BarbeiroDTO toDTO(Barbeiro b) {

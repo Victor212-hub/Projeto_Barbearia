@@ -12,6 +12,7 @@ import com.Barbearia.backend.DTO.ServicoDTO;
 import com.Barbearia.backend.exception.BadRequestException;
 import com.Barbearia.backend.exception.ResourceNotFoundException;
 import com.Barbearia.backend.repository.*;
+import com.Barbearia.backend.security.AuthenticateUser;
 import com.Barbearia.backend.model.*;
 
 @Service
@@ -23,15 +24,17 @@ public class AgendamentoService {
     private final BarbeiroRepository barbeiroRepository;
     private final UnidadeRepository unidadeRepository;
     private final ServicoRepository servicoRepository;
+    private final AuthenticateUser authenticateUser;
 
     public AgendamentoService(AgendamentoRepository repository, ClienteRepository clienteRepository,
                               BarbeiroRepository barbeiroRepository, UnidadeRepository unidadeRepository,
-                              ServicoRepository servicoRepository) {
+                              ServicoRepository servicoRepository, AuthenticateUser authenticateUser) {
         this.repository = repository;
         this.clienteRepository = clienteRepository;
         this.barbeiroRepository = barbeiroRepository;
         this.unidadeRepository = unidadeRepository;
         this.servicoRepository = servicoRepository;
+        this.authenticateUser = authenticateUser;
     }
     public List<AgendamentoResponseDTO> listarTodos(){
         return repository.findAll().stream().map(this::toDTO).toList();
@@ -91,14 +94,62 @@ public class AgendamentoService {
     }
 
     public AgendamentoResponseDTO atualizarStatus(Long id, StatusAgendamento novoStatus) {
-        Agendamento agendamento = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException ("Agendamento não encontrado"));
-
+        Agendamento agendamento = buscarEntidade(id);
         agendamento.setStatus(novoStatus);
         Agendamento atualizado = repository.save(agendamento);
         return toDTO(atualizado);
     }
 
+    public List<AgendamentoResponseDTO> listarPorCliente(Long clienteId) {
+        return repository.findByClienteId(clienteId).stream().map(this::toDTO).toList();
+    }
+    public List<AgendamentoResponseDTO> listarPorBarbeiro(Long barbeiroId) {
+        return repository.findByBarbeiroId(barbeiroId).stream().map(this::toDTO).toList();
+    }
+    private Agendamento buscarEntidade(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Agendamento não encontrado"));
+    }
+
+    public List<AgendamentoResponseDTO> listar(Long clienteIdParam, Long barbeiroIdParam) {
+
+        if (authenticateUser.isAdmin()){
+        if(clienteIdParam != null) return listarPorCliente(clienteIdParam);
+        if(barbeiroIdParam != null) return listarPorBarbeiro(barbeiroIdParam);
+        return listarTodos();
+        }
+
+        String email = authenticateUser.getEmail();
+
+        var clienteLogado = clienteRepository.findByEmail(email);
+        if (clienteLogado.isPresent()){
+            return listarPorCliente(clienteLogado.get().getId());
+        }
+        var barbeiroLogado = barbeiroRepository.findByEmail(email);
+        if (barbeiroLogado.isPresent()){
+            return listarPorBarbeiro(barbeiroLogado.get().getId());
+        }
+        throw new BadRequestException("Usuário não autorizado a visualizar agendamentos.");
+    }
+
+    public AgendamentoResponseDTO listarPorId(Long id){ 
+
+        Agendamento agendamento = buscarEntidade(id);
+        ValidarAcesso(agendamento);
+        return toDTO(agendamento);
+    }
+
+    private void ValidarAcesso(Agendamento agendamento) {
+        if (authenticateUser.isAdmin()) return;
+
+        String email = authenticateUser.getEmail();
+        boolean EhOCliente = agendamento.getCliente().getEmail().equals(email);
+        boolean EhOBarbeiro = agendamento.getBarbeiro().getEmail().equals(email);
+
+        if (!EhOCliente && !EhOBarbeiro) {
+            throw new BadRequestException("Usuário não autorizado a visualizar este agendamento.");
+        }
+    }
 
     private AgendamentoResponseDTO toDTO(Agendamento a) {
 

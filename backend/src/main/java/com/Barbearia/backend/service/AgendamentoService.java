@@ -95,6 +95,7 @@ public class AgendamentoService {
 
     public AgendamentoResponseDTO atualizarStatus(Long id, StatusAgendamento novoStatus) {
         Agendamento agendamento = buscarEntidade(id);
+        ValidarPermissaoParaAlterarStatus(agendamento, novoStatus);
         agendamento.setStatus(novoStatus);
         Agendamento atualizado = repository.save(agendamento);
         return toDTO(atualizado);
@@ -149,6 +150,23 @@ public class AgendamentoService {
         if (!EhOCliente && !EhOBarbeiro) {
             throw new BadRequestException("Usuário não autorizado a visualizar este agendamento.");
         }
+    }
+
+    private void ValidarPermissaoParaAlterarStatus(Agendamento agendamento, StatusAgendamento novoStatus) {
+        if (authenticateUser.isAdmin()) return;
+
+        String email = authenticateUser.getEmail();
+        boolean EhOCliente = agendamento.getCliente().getEmail().equals(email);
+        boolean EhOBarbeiro = agendamento.getBarbeiro().getEmail().equals(email);
+
+        if (!EhOCliente && !EhOBarbeiro) {
+            throw new BadRequestException("Usuário não autorizado a atualizar este agendamento.");
+        }
+
+        if (EhOCliente && novoStatus != StatusAgendamento.CANCELADO) {
+            throw new BadRequestException("Clientes só podem cancelar agendamentos.");
+        }
+
     }
 
     private AgendamentoResponseDTO toDTO(Agendamento a) {

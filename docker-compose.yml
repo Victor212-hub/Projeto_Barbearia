@@ -24,6 +24,7 @@ services:
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
       SERVER_PORT: ${SERVER_PORT}
+      JWT_SECRET: ${JWT_SECRET}
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
 

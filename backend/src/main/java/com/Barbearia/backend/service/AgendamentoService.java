@@ -59,6 +59,8 @@ public class AgendamentoService {
                 LocalDateTime fim = inicio.plusMinutes(duracaoTotalMin);
 
                 VerificarConflitoDeHorario(barbeiro.getId(), inicio, fim);
+                ValidarClienteDoAgendamento(cliente, barbeiro);
+                ValidarBarbeiroPertenceAUnidade(barbeiro, unidade);
 
                 Agendamento agendamento = new Agendamento();
                 agendamento.setCliente(cliente);
@@ -167,6 +169,20 @@ public class AgendamentoService {
             throw new BadRequestException("Clientes só podem cancelar agendamentos.");
         }
 
+    }
+
+    private void ValidarClienteDoAgendamento(Cliente cliente,Barbeiro barbeiro){
+        if (authenticateUser.isAdmin()) return;
+        if(barbeiro.getEmail().equals(authenticateUser.getEmail())) return;
+        if(!cliente.getEmail().equals(authenticateUser.getEmail())){
+            throw new BadRequestException("Usuário não autorizado a criar agendamento para outro cliente.");
+        }
+    }
+
+    private void ValidarBarbeiroPertenceAUnidade(Barbeiro barbeiro, Unidade unidade){
+        if (!barbeiro.getUnidade().getId().equals(unidade.getId())) {
+            throw new BadRequestException("O barbeiro não pertence à unidade selecionada.");
+        }
     }
 
     private AgendamentoResponseDTO toDTO(Agendamento a) {

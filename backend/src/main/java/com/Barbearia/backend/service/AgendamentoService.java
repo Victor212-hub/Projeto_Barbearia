@@ -24,16 +24,18 @@ public class AgendamentoService {
     private final BarbeiroRepository barbeiroRepository;
     private final UnidadeRepository unidadeRepository;
     private final ServicoRepository servicoRepository;
+    private final BarbeiroHorarioRepository barbeiroHorarioRepository;
     private final AuthenticateUser authenticateUser;
 
     public AgendamentoService(AgendamentoRepository repository, ClienteRepository clienteRepository,
                               BarbeiroRepository barbeiroRepository, UnidadeRepository unidadeRepository,
-                              ServicoRepository servicoRepository, AuthenticateUser authenticateUser) {
+                              ServicoRepository servicoRepository, BarbeiroHorarioRepository barbeiroHorarioRepository, AuthenticateUser authenticateUser) {
         this.repository = repository;
         this.clienteRepository = clienteRepository;
         this.barbeiroRepository = barbeiroRepository;
         this.unidadeRepository = unidadeRepository;
         this.servicoRepository = servicoRepository;
+        this.barbeiroHorarioRepository = barbeiroHorarioRepository;
         this.authenticateUser = authenticateUser;
     }
     public List<AgendamentoResponseDTO> listarTodos(){
@@ -48,19 +50,25 @@ public class AgendamentoService {
         Unidade unidade = unidadeRepository.findById(dto.getUnidadeId())
                 .orElseThrow(() -> new ResourceNotFoundException("Unidade não encontrada"));
 
+                ValidarBarbeiroPertenceAUnidade(barbeiro, unidade);
+                ValidarClienteDoAgendamento(cliente, barbeiro);
+                
                List<Servico> servicos = dto.getServicosIds().stream()
                 .map(id -> servicoRepository.findById(id)
                         .orElseThrow(() -> new ResourceNotFoundException("Serviço não encontrado: " + id)))
                 .toList();
+
+                ValidarServicoDisponivel(servicos);
 
                 int duracaoTotalMin = servicos.stream().mapToInt(Servico::getDuracao).sum();
 
                 LocalDateTime inicio = dto.getDataHora();
                 LocalDateTime fim = inicio.plusMinutes(duracaoTotalMin);
 
+                ValidarDentroDoExpediente(barbeiro.getId(), inicio, fim);
                 VerificarConflitoDeHorario(barbeiro.getId(), inicio, fim);
-                ValidarClienteDoAgendamento(cliente, barbeiro);
-                ValidarBarbeiroPertenceAUnidade(barbeiro, unidade);
+               
+                
 
                 Agendamento agendamento = new Agendamento();
                 agendamento.setCliente(cliente);
@@ -182,6 +190,35 @@ public class AgendamentoService {
     private void ValidarBarbeiroPertenceAUnidade(Barbeiro barbeiro, Unidade unidade){
         if (!barbeiro.getUnidade().getId().equals(unidade.getId())) {
             throw new BadRequestException("O barbeiro não pertence à unidade selecionada.");
+        }
+    }
+
+    private void ValidarServicoDisponivel(List<Servico> servicos){
+        List<String>indiponiveis = servicos.stream()
+                .filter(s -> !s.isDisponivel())
+                .map(Servico::getNome)
+                .toList();
+
+        if(!indiponiveis.isEmpty()){
+            throw new BadRequestException("Os seguintes serviços não estão disponíveis: " + String.join(", ", indiponiveis));
+        }
+    }
+
+    private void ValidarDentroDoExpediente(Long barbeiroId,LocalDateTime inicio,LocalDateTime fim){
+        if(!inicio.toLocalTime().equals(fim.toLocalTime())){
+            throw new BadRequestException("O agendamento não pode ultrapassar o horário de expediente do barbeiro.");
+        }
+        int DiaDaSemana = inicio.getDayOfWeek().getValue();
+
+        List<BarbeiroHorario> horariosDoDia = barbeiroHorarioRepository.findByBarbeiroId(barbeiroId).stream()
+                .filter(h -> h.getDiaDaSemana().equals(DiaDaSemana))
+                .toList();
+
+                boolean dentroDeAlgumExpediente = horariosDoDia.stream().anyMatch(h ->
+                    !inicio.toLocalTime().isBefore(h.getHorarioInicio()) && !fim.toLocalTime().isAfter(h.getHorarioFim())
+                );
+        if (!dentroDeAlgumExpediente) {
+            throw new BadRequestException("O agendamento não está dentro do horário de expediente do barbeiro.");
         }
     }
 

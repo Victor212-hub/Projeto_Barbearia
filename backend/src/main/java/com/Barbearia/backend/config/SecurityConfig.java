@@ -42,7 +42,6 @@ public PasswordEncoder passwordEncoder() {
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/admin/**").permitAll()//REMOVER ANTES DE IR PARA A PRODUÇÃO!!!!
                 .requestMatchers(HttpMethod.GET, "/api/servicos/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/unidades/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/barbeiros/**").permitAll()

@@ -23,7 +23,7 @@ services:
       DB_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
-      SERVER_PORT: ${SERVER_PORT}
+      PORT: ${SERVER_PORT}
       JWT_SECRET: ${JWT_SECRET}
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"

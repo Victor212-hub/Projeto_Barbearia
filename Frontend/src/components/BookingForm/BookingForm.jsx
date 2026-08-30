@@ -1,71 +1,109 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/AuthContext";
 import "./BookingForm.css";
 
 import BookingFields from "./BookingFields";
-import VerificationStep from "./Verification";
 import SuccessStep from "./SuccessStep";
 
-import {
-  sendVerificationCode,
-  verifyCode,
-  createBooking,
-} from "./bookingMockApi";
+import { getServicos, getBarbeiros, createBooking } from "../../services/bookingApi";
 
 const DRAFT_STORAGE_KEY = "barbershop-booking-draft";
+const DEFAULT_UNIDADE_ID = Number(import.meta.env.VITE_DEFAULT_UNIDADE_ID || 1);
 
 function BookingForm() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const savedCustomer = JSON.parse(localStorage.getItem("barbershopCustomer"));
 
   const [formData, setFormData] = useState({
-    name: savedCustomer?.name || user?.name || "",
-    phone: savedCustomer?.phone || user?.phone || "",
-    service: "",
+    unidadeId: String(DEFAULT_UNIDADE_ID),
+    barbeiroId: "",
+    servicoId: "",
     date: "",
     time: "",
     notes: "",
   });
 
+  const [servicos, setServicos] = useState([]);
+  const [barbeiros, setBarbeiros] = useState([]);
+  const [isLoadingOptions, setIsLoadingOptions] = useState(true);
+
   const [step, setStep] = useState("form");
-  const [verificationCode, setVerificationCode] = useState("");
   const [message, setMessage] = useState("");
-  const [shouldSaveCustomer, setShouldSaveCustomer] = useState(false);
+  const [, setIsSubmitting] = useState(false);
+  const [confirmedBooking, setConfirmedBooking] = useState(null);
 
   useEffect(() => {
-    const storedDraft = window.sessionStorage.getItem(DRAFT_STORAGE_KEY);
-
-    if (!storedDraft) {
-      return;
+    async function loadOptions() {
+      setIsLoadingOptions(true);
+      try {
+        const servicosData = await getServicos();
+        setServicos(servicosData || []);
+      } catch (error) {
+        setMessage(error.message || "Não foi possível carregar as opções de agendamento.");
+      } finally {
+        setIsLoadingOptions(false);
+      }
     }
 
-    try {
-      const parsedDraft = JSON.parse(storedDraft);
-      setFormData((currentData) => ({
-        ...currentData,
-        service: parsedDraft.service || currentData.service,
-        date: parsedDraft.date || currentData.date,
-        time: parsedDraft.time || currentData.time,
-        notes: parsedDraft.notes || currentData.notes,
-      }));
-    } catch (error) {
-      console.warn("Não foi possível restaurar o rascunho do agendamento.", error);
+    loadOptions();
+  }, []);
+
+  useEffect(() => {
+    async function loadBarbeiros() {
+      try {
+        const barbeirosData = await getBarbeiros(DEFAULT_UNIDADE_ID);
+        setBarbeiros(barbeirosData || []);
+      } catch (error) {
+        setMessage(error.message || "Não foi possível carregar os barbeiros.");
+      }
     }
+
+    loadBarbeiros();
+  }, []);
+
+  useEffect(() => {
+    async function restoreDraft() {
+      const storedDraft = window.sessionStorage.getItem(DRAFT_STORAGE_KEY);
+
+      if (!storedDraft) {
+        return;
+      }
+
+      try {
+        const parsedDraft = JSON.parse(storedDraft);
+        setFormData((currentData) => ({
+          ...currentData,
+          ...parsedDraft,
+        }));
+      } catch (error) {
+        console.warn("Não foi possível restaurar o rascunho do agendamento.", error);
+      }
+    }
+
+    restoreDraft();
   }, []);
 
   useEffect(() => {
     const draftToSave = {
-      service: formData.service,
+      unidadeId: formData.unidadeId,
+      barbeiroId: formData.barbeiroId,
+      servicoId: formData.servicoId,
       date: formData.date,
       time: formData.time,
       notes: formData.notes,
     };
 
     window.sessionStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draftToSave));
-  }, [formData.service, formData.date, formData.time, formData.notes]);
+  }, [
+    formData.unidadeId,
+    formData.barbeiroId,
+    formData.servicoId,
+    formData.date,
+    formData.time,
+    formData.notes,
+  ]);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -73,35 +111,26 @@ function BookingForm() {
     setFormData((currentData) => ({
       ...currentData,
       [name]: value,
+      ...(name === "unidadeId" ? { barbeiroId: "" } : {}),
     }));
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
 
     const requiredFieldsAreEmpty =
-      !formData.name ||
-      !formData.phone ||
-      !formData.service ||
+      !formData.unidadeId ||
+      !formData.barbeiroId ||
+      !formData.servicoId ||
       !formData.date ||
       !formData.time;
 
     if (requiredFieldsAreEmpty) {
-      setMessage("Preencha nome, telefone, serviço, data e horário.");
+      setMessage("Preencha todos os campos obrigatórios.");
       return;
     }
 
     if (!user) {
-      window.sessionStorage.setItem(
-        DRAFT_STORAGE_KEY,
-        JSON.stringify({
-          service: formData.service,
-          date: formData.date,
-          time: formData.time,
-          notes: formData.notes,
-        })
-      );
-
       navigate("/entrar", {
         state: { from: { pathname: location.pathname } },
         replace: false,
@@ -109,61 +138,44 @@ function BookingForm() {
       return;
     }
 
-    const response = sendVerificationCode(formData.phone);
-
-    if (!response.success) {
-      setMessage(response.message);
-      return;
-    }
-
+    setIsSubmitting(true);
     setMessage("");
-    setStep("verify");
-  }
 
-  function handleVerifyCode(event) {
-    event.preventDefault();
+    try {
+      const dataHora = `${formData.date}T${formData.time}:00`;
 
-    const verificationResponse = verifyCode(verificationCode);
+      const unidadeIdParaEnviar = Number(formData.unidadeId || DEFAULT_UNIDADE_ID);
 
-    if (!verificationResponse.success) {
-      setMessage(verificationResponse.message);
-      return;
+      const booking = await createBooking({
+        clienteId: user.id,
+        barbeiroId: Number(formData.barbeiroId),
+        unidadeId: unidadeIdParaEnviar,
+        dataHora,
+        observacoes: formData.notes,
+        servicosIds: [Number(formData.servicoId)],
+      });
+
+      setConfirmedBooking(booking);
+      setStep("success");
+    } catch (error) {
+      setMessage(error.message || "Não foi possível criar o agendamento. Tente novamente.");
+    } finally {
+      setIsSubmitting(false);
     }
-
-    const bookingResponse = createBooking(formData);
-
-    if (!bookingResponse.success) {
-      setMessage(bookingResponse.message);
-      return;
-    }
-
-    if (shouldSaveCustomer) {
-      localStorage.setItem(
-        "barbershopCustomer",
-        JSON.stringify({
-          name: formData.name,
-          phone: formData.phone,
-        })
-      );
-    }
-
-    setMessage("");
-    setStep("success");
   }
 
   function handleNewBooking() {
-    setFormData((currentData) => ({
-      name: currentData.name,
-      phone: currentData.phone,
-      service: "",
+    setFormData({
+      unidadeId: String(DEFAULT_UNIDADE_ID),
+      barbeiroId: "",
+      servicoId: "",
       date: "",
       time: "",
       notes: "",
-    }));
+    });
 
-    setVerificationCode("");
-    setShouldSaveCustomer(false);
     setMessage("");
+    setConfirmedBooking(null);
     setStep("form");
   }
 
@@ -178,48 +190,24 @@ function BookingForm() {
           </h2>
 
           <p className="booking-subtitle">
-            Preencha os dados do atendimento. Antes de confirmar, vamos validar
-            seu telefone para evitar agendamentos falsos.
+            Preencha os dados do atendimento. A confirmação final é feita pela barbearia.
           </p>
-
-          <div className="booking-info">
-            <strong>Verificação por WhatsApp</strong>
-            <p>
-              Nesta versão, o código é simulado para preparar a integração com o
-              backend. Use o código de teste: <strong>123456</strong>.
-            </p>
-          </div>
         </div>
 
         {step === "form" && (
           <BookingFields
             formData={formData}
             message={message}
+            servicos={servicos}
+            barbeiros={barbeiros}
+            isLoadingOptions={isLoadingOptions}
             onChange={handleChange}
             onSubmit={handleSubmit}
           />
         )}
 
-        {step === "verify" && (
-          <VerificationStep
-            phone={formData.phone}
-            verificationCode={verificationCode}
-            message={message}
-            shouldSaveCustomer={shouldSaveCustomer}
-            onCodeChange={(event) => setVerificationCode(event.target.value)}
-            onSaveCustomerChange={(event) =>
-              setShouldSaveCustomer(event.target.checked)
-            }
-            onSubmit={handleVerifyCode}
-            onBack={() => {
-              setMessage("");
-              setStep("form");
-            }}
-          />
-        )}
-
-        {step === "success" && (
-          <SuccessStep formData={formData} onNewBooking={handleNewBooking} />
+        {step === "success" && confirmedBooking && (
+          <SuccessStep booking={confirmedBooking} onNewBooking={handleNewBooking} />
         )}
       </div>
     </section>

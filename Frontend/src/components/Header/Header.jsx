@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../../auth/AuthContext"; // <-- Importamos o contexto de autenticação
 import "./Header.css";
 
 const navLinks = [
@@ -26,6 +27,9 @@ function Header({ businessName = "Barbearia" }) {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Puxamos o usuário e a função de logout do contexto
+  const { user, logout } = useAuth();
+
   function toggleMenu() {
     setIsMenuOpen((currentState) => !currentState);
   }
@@ -51,6 +55,16 @@ function Header({ businessName = "Barbearia" }) {
 
     navigate(targetPath);
   }
+
+  // Função que limpa os dados e desloga
+  function handleLogout() {
+    closeMenu();
+    logout();
+    navigate("/");
+  }
+
+  // Pega apenas o primeiro nome do usuário para não ficar um texto gigante no menu
+  const primeiroNome = user?.nome ? user.nome.split(" ")[0] : "Cliente";
 
   return (
     <header className="site-header">
@@ -96,13 +110,43 @@ function Header({ businessName = "Barbearia" }) {
             </button>
           ))}
 
-          <button
-            className="barber-area-link barber-area-button mobile-only"
-            type="button"
-            onClick={() => handleNavigate("/barbeiro/login")}
-          >
-            Área do barbeiro
-          </button>
+          {/* RENDERIZAÇÃO CONDICIONAL NO MOBILE */}
+          {user ? (
+            <>
+              <span style={{ padding: '0.8rem', fontWeight: 'bold', borderBottom: '1px solid #eee' }}>
+                <button
+                  onClick={() => handleNavigate("/meus-agendamentos")}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.95rem', fontWeight: 'bold', color: 'inherit' }}
+                >
+                  Olá, {primeiroNome}
+                </button>
+              </span>
+              <button
+                className="nav-link"
+                type="button"
+                onClick={handleLogout}
+              >
+                Sair
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                className="nav-link mobile-only"
+                type="button"
+                onClick={() => handleNavigate("/entrar")}
+              >
+                Entrar
+              </button>
+              <button
+                className="barber-area-link barber-area-button mobile-only"
+                type="button"
+                onClick={() => handleNavigate("/barbeiro/login")}
+              >
+                Área do barbeiro
+              </button>
+            </>
+          )}
 
           <button
             className="booking-link mobile-booking-link"
@@ -114,13 +158,42 @@ function Header({ businessName = "Barbearia" }) {
         </nav>
 
         <div className="header-actions">
-          <button
-            className="barber-area-link barber-area-button"
-            type="button"
-            onClick={() => handleNavigate("/barbeiro/login")}
-          >
-            Área do barbeiro
-          </button>
+          {/* RENDERIZAÇÃO CONDICIONAL NO DESKTOP */}
+          {user ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+              <span style={{ fontSize: '0.95rem', fontWeight: 'bold' }}><button
+                onClick={() => handleNavigate("/meus-agendamentos")}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.95rem', fontWeight: 'bold', color: 'inherit' }}
+              >
+                Olá, {primeiroNome}
+              </button></span>
+              <button
+                className="barber-area-link barber-area-button"
+                type="button"
+                onClick={handleLogout}
+              >
+                Sair
+              </button>
+            </div>
+          ) : (
+            <>
+              <button
+                className="barber-area-link barber-area-button"
+                style={{ background: "transparent", color: "inherit", border: "none" }}
+                type="button"
+                onClick={() => handleNavigate("/entrar")}
+              >
+                Entrar
+              </button>
+              <button
+                className="barber-area-link barber-area-button"
+                type="button"
+                onClick={() => handleNavigate("/barbeiro/login")}
+              >
+                Área do barbeiro
+              </button>
+            </>
+          )}
 
           <button className="booking-link" type="button" onClick={() => handleNavigate("/agendar")}>
             Agende já

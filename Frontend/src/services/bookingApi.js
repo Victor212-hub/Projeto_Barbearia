@@ -32,3 +32,18 @@ export function getBarberBookings () {
 export function updateBookingStatus(id, status) {
   return api.patch(`/api/agendamentos/${id}/status`, { status }, { auth: true});
 }
+
+// Busca os agendamentos de um cliente específico
+export async function getAgendamentosCliente(clienteId) {
+  try {
+    // Ajuste a URL abaixo se a sua rota no Spring Boot for diferente
+    const response = await api.get(`/agendamentos/cliente/${clienteId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao buscar agendamentos do cliente:", error);
+    throw new Error(
+      error.response?.data?.message || "Não foi possível carregar seus agendamentos.",
+      { cause: error }
+    );
+  }
+}

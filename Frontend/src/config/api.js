@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8085";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 const TOKEN_STORAGE_KEY = "barbershop-auth-token";
 
 export function getToken() {

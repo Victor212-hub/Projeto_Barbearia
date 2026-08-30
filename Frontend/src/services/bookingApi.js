@@ -1,51 +1,49 @@
-// TODO: substituir por integração real com o backend.
-export function createBooking() {
-  return Promise.resolve({
-    success: true,
-    message: "Agendamento mockado criado com sucesso.",
-  });
+import { api } from "../config/api";
+
+export function getServicos() {
+  return api.get("/api/servicos");
 }
 
-export function getClientBookings() {
-  return Promise.resolve({
-    success: true,
-    bookings: [],
-    message: "Lista de agendamentos do cliente ainda não integrada.",
-  });
+export function getUnidades() {
+  return api.get("/api/unidades");
 }
 
-export function repeatBooking() {
-  return Promise.resolve({
-    success: true,
-    message: "Repetição de agendamento ainda não implementada.",
-  });
+export function getBarbeiros(unidadeId) {
+  const query = unidadeId ? `?unidadeId=${unidadeId}` : "";
+  return api.get(`/api/barbeiros${query}`);
 }
 
-export function cancelBooking() {
-  return Promise.resolve({
-    success: true,
-    message: "Cancelamento de agendamento ainda não implementado.",
-  });
+export function createBooking({ clienteId, barbeiroId, unidadeId, dataHora, observacoes, servicosIds}) {
+  return api.post(
+    "/api/agendamentos",
+    { clienteId, barbeiroId, unidadeId, dataHora, observacoes, servicosIds },
+    { auth: true}
+  );
 }
 
-export function rescheduleBooking() {
-  return Promise.resolve({
-    success: true,
-    message: "Remarcação de agendamento ainda não implementada.",
-  });
+export function getClientBookings(){
+  return api.get("/api/agendamentos", { auth: true});
 }
 
-export function getBarberBookings() {
-  return Promise.resolve({
-    success: true,
-    bookings: [],
-    message: "Painel do barbeiro ainda não integrado.",
-  });
+export function getBarberBookings () {
+  return api.get("/api/agendamentos", {auth: true});
 }
 
-export function updateBookingStatus() {
-  return Promise.resolve({
-    success: true,
-    message: "Atualização de status ainda não implementada.",
-  });
+export function updateBookingStatus(id, status) {
+  return api.patch(`/api/agendamentos/${id}/status`, { status }, { auth: true});
+}
+
+// Busca os agendamentos de um cliente específico
+export async function getAgendamentosCliente(clienteId) {
+  try {
+    // Ajuste a URL abaixo se a sua rota no Spring Boot for diferente
+    const response = await api.get(`/agendamentos/cliente/${clienteId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao buscar agendamentos do cliente:", error);
+    throw new Error(
+      error.response?.data?.message || "Não foi possível carregar seus agendamentos.",
+      { cause: error }
+    );
+  }
 }

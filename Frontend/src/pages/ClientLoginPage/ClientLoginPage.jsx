@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from "react-router";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../auth/AuthContext";
 import "./ClientLoginPage.css";
 
@@ -21,6 +21,9 @@ function ClientLoginPage() {
       <div className="client-login-card">
         <p className="client-login-eyebrow">Área do cliente</p>
         <h1 className="client-login-title">Entre para acessar sua conta</h1>
+        <p style={{ textAlign: "center", marginTop: "1rem" }}>
+          Ainda não tem conta? <Link to="/cadastro">Cadastre-se aqui</Link>
+        </p>
         <p className="client-login-subtitle">
           Este fluxo ainda é mockado para preparar a integração futura.
         </p>

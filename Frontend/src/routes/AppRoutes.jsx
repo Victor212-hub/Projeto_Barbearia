@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router";
+import { Route, Routes } from "react-router-dom";
 import ProtectedRoute from "../auth/ProtectedRoute";
 import PublicLayout from "../layouts/PublicLayout/PublicLayout";
 import ClientLayout from "../layouts/ClientLayout/ClientLayout";
@@ -10,6 +10,8 @@ import ClientProfilePage from "../pages/ClientProfilePage/ClientProfilePage";
 import BarberLoginPage from "../pages/BarberLoginPage/BarberLoginPage";
 import BarberDashboardPage from "../pages/BarberDashboardPage/BarberDashboardPage";
 import NotFoundPage from "../pages/NotFoundPage/NotFoundPage";
+import MeusAgendamentos from "../pages/MeusAgendamentos/meusAgendamentos";
+import ClientRegisterPage from "../pages/ClientRegisterPage/ClientRegisterPage";
 
 function AppRoutes() {
   return (
@@ -17,7 +19,9 @@ function AppRoutes() {
       <Route element={<PublicLayout />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/agendar" element={<BookingPage />} />
+        <Route path="/meus-agendamentos" element={<MeusAgendamentos />} />
         <Route path="/entrar" element={<ClientLoginPage />} />
+        <Route path="/cadastro" element={<ClientRegisterPage />} />
       </Route>
 
       <Route element={<ProtectedRoute redirectTo="/entrar" allowedRoles={["CLIENT"]} />}>

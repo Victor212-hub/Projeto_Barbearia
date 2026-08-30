@@ -50,3 +50,5 @@ export function logoutUser() {
   setToken(null);
   return Promise.resolve({ success: true, message: "Sessão encerrada."});
 }
+
+  

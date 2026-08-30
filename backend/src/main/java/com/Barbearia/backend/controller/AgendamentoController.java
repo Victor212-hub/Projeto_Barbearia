@@ -19,10 +19,14 @@ public class AgendamentoController {
     public AgendamentoController(AgendamentoService Service) {
         this.Service = Service;
     }
-
+    @GetMapping("/{id}")
+public AgendamentoResponseDTO buscar(@PathVariable Long id) {
+    return Service.listarPorId(id);
+    }
     @GetMapping
-    public List<AgendamentoResponseDTO> listar() {
-        return Service.listarTodos();
+    public List<AgendamentoResponseDTO> listar(@RequestParam(required = false) Long clienteId,
+                                                @RequestParam(required = false) Long barbeiroId) {
+        return Service.listar(clienteId, barbeiroId);
     }
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

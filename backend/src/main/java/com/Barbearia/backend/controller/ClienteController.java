@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+
 import com.Barbearia.backend.DTO.ClienteDTO;
 import com.Barbearia.backend.service.ClienteService;
 
@@ -17,6 +19,7 @@ public class ClienteController {
         this.service = service;
     }
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public List<ClienteDTO> listarTodos() {
         return service.ListarTodos();
     }

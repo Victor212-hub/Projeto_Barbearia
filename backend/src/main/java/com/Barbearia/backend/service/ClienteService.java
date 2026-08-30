@@ -4,6 +4,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import com.Barbearia.backend.DTO.ClienteDTO;
+import com.Barbearia.backend.exception.BadRequestException;
 import com.Barbearia.backend.model.Cliente;
 import com.Barbearia.backend.repository.ClienteRepository;
 
@@ -22,7 +23,7 @@ public class ClienteService {
     }
     public ClienteDTO criar(ClienteDTO dto) {
         if (repository.existsByEmail(dto.getEmail())) {
-            throw new IllegalArgumentException("Email já cadastrado");
+            throw new BadRequestException("Email já cadastrado");
         }
         Cliente cliente = new Cliente();
         cliente.setNome(dto.getNome());
